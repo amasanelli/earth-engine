@@ -1,0 +1,205 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var lote = /* color: #d63000 */ee.Geometry.Polygon(
+        [[[-60.07729022078274, -35.78935250203981],
+          [-60.07162539534329, -35.79359942175342],
+          [-60.061239882037626, -35.78461796336374],
+          [-60.06544558577298, -35.78169354858583],
+          [-60.07359950117825, -35.78635863536627],
+          [-60.072998686358915, -35.78712451897099],
+          [-60.0748869615054, -35.78830814275296],
+          [-60.075745268390165, -35.7877511455219]]]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+//tomado de Franco Frolla y modificado por Gustavo Sabo.
+// actualizada y probada al 24/10/2018
+
+var coleccionsentinel = ee.ImageCollection('COPERNICUS/S2')
+    .filterBounds(lote)
+    .filter(ee.Filter.lt('CLOUD_COVERAGE_ASSESSMENT', 1));
+
+Map.centerObject(lote,15);
+
+var listOfImages = coleccionsentinel.toList(coleccionsentinel.size());
+
+
+// compute MSAVI2
+var msavi2_coleccion = coleccionsentinel.map (function(image) {
+var msavi2 = image.select('B8').multiply(2).add(1)
+  .subtract(image.select('B8').multiply(2).add(1).pow(2)
+    .subtract(image.select('B8').subtract(image.select('B4')).multiply(8)).sqrt()
+  ).divide(2).rename('msavi2');return image.addBands(msavi2);
+});
+
+
+var msavi2_clip = msavi2_coleccion.map (function(image) {
+var image_clip = image.clip(lote).select("msavi2");
+return image.addBands(image_clip);
+});
+
+
+var count = msavi2_clip.size();
+
+var maximo = count.getInfo();
+
+listOfImages = msavi2_coleccion.toList(msavi2_coleccion.size());
+
+var mean = msavi2_clip.mean(); // en desuso
+
+
+// Creando grafico1
+var chart1 = ui.Chart.image.series({
+  imageCollection: msavi2_coleccion.select('msavi2'),
+  region: lote,
+  reducer: ee.Reducer.mean(),
+  scale: 30
+}).setOptions({title: 'Historial de promedios MSAVI2 para el Lote.'});
+
+print(chart1);
+
+ // Creando grafico2
+var chart2 = ui.Chart.image.series({
+  imageCollection: msavi2_coleccion.select('msavi2'),
+  region: lote,
+  reducer: ee.Reducer.stdDev(),
+  scale: 30
+}).setOptions({title: 'Historial de Desviación Estandar MSAVI2 para el Lote.'});
+
+print(chart2);
+
+
+var escena = ee.Image(listOfImages.get(maximo - 1)).select(['msavi2']);
+var fecha = escena.date().format("Y-M-d");
+var wdrviDate = ee.String("msavi2: ").cat(fecha);
+
+
+var showLayer = function(slider) {
+ 
+  escena = ee.Image(listOfImages.get(slider - 1)).select(['msavi2']);
+  fecha = escena.date().format("Y-M-d");
+  
+  wdrviDate = ee.String("msavi2: ").cat(fecha);
+  panel.widgets().set(0, ui.Label(wdrviDate.getInfo()));
+  
+  
+    var p70 = ee.Number(escena.reduceRegion({
+            reducer: ee.Reducer.percentile([90]),
+            geometry: lote,
+            maxPixels: 1e9,
+            scale: 30,
+            }).get('msavi2'));
+            
+    var p20 = ee.Number(escena.reduceRegion({
+            reducer: ee.Reducer.percentile([10]),
+            geometry: lote,
+            maxPixels: 1e9,
+            scale: 30,
+            }).get('msavi2'));
+      
+    
+    var valor_p70 = p70.getInfo();
+    
+    var valor_p20 = p20.getInfo();
+    
+    print('Actual: Nº',slider,'del',fecha);
+    //print(p20);
+    //print(p70);
+
+      if (cortar.getValue() === true){
+            escena = escena.clip(lote);
+      }
+
+      Map.layers().reset();
+      Map.addLayer({
+        eeObject: escena,
+        visParams: {
+          min: valor_p20,
+          max: valor_p70,
+          palette:["FFFFFF", "CE7E45", "DF923D", "F1B555", "FCD163","99B718", "74A901", "66A000", "529400", "3E8601", "207401", "056201", "004C00", "023B01", "012E01", "011D01", "011301"]
+        },
+        name: String(slider)
+      }); 
+};
+
+
+// Crear botones...
+
+var label = ui.Label(wdrviDate.getInfo());
+var label2 = ui.Label('Por Ing. Franco Frolla,');
+var label3 = ui.Label('modificado por Anl. Gustavo Sabo.');
+
+var slider = ui.Slider({
+  min: 1,
+  max: maximo,
+  step: 1,
+  onChange: showLayer,
+  style: {stretch: 'horizontal'}
+});
+
+
+var button1 = ui.Button({
+  label: '<<<',
+  onClick: function() {
+  
+  var numero = (slider.getValue()) - 1;
+  slider.setValue(numero);
+  print(numero)
+  showLayer(numero);
+  }
+});
+
+var button2 = ui.Button({
+  label: '>>>',
+  onClick: function() {
+  var numero = (slider.getValue()) + 1;
+  
+ if (numero >= maximo) {
+    numero = maximo;
+}
+  slider.setValue(numero);
+  print(numero);
+  showLayer(numero);
+  }
+});
+
+var Exportar = ui.Button({
+  label: 'Exportar',
+  onClick: function() {
+    var regionJSON = JSON.stringify(lote.getInfo());
+   Export.image.toDrive({
+          image: escena,
+          description: 'msavi2_' + fecha.getInfo(),
+          scale: 10,
+          'region': regionJSON,
+        });
+  }
+});
+
+var panel;
+
+var cortar = ui.Checkbox({
+  label: 'Cortar al lote',
+  value: false,
+  onChange: function(){
+    if(typeof panel !== "undefined"){
+      showLayer(slider.getValue());
+    }
+  },
+});
+
+
+// Crear panel
+panel = ui.Panel({
+  widgets: [label, slider,button1,button2,cortar, Exportar,label2,label3],
+  layout: ui.Panel.Layout.flow('vertical'),
+  style: {
+    color: "blue",
+    textAlign: "center",
+    stretch: "horizontal",
+    position: 'bottom-left',
+    padding: '7px'
+  }
+});
+
+
+Map.add(panel);
+// Set default
+slider.setValue(maximo);
