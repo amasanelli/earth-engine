@@ -26,7 +26,7 @@ var label = ui.Label('NDVI Umbral');
 
 var slider = ui.Slider();
 
-slider.setValue(0.7);  // Set a default value.
+slider.setValue(0.7);
 slider.onChange(function(value) {
   NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.7));
   Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral');
