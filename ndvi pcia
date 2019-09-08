@@ -22,9 +22,11 @@ Map.addLayer(NDVI_max, {min:0, max:0.85, palette: ['5CFF69','005D07']}, 'NDVI_p9
 var NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.7));
 Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral');
 
+var label = ui.Label('NDVI Umbral');
+
 var slider = ui.Slider();
 
-slider.setValue(0.9);  // Set a default value.
+slider.setValue(0.7);  // Set a default value.
 slider.onChange(function(value) {
   NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.7));
   Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral');
@@ -32,9 +34,9 @@ slider.onChange(function(value) {
 });
 
 var panel = ui.Panel({
-  widgets: [slider],
+  widgets: [label,slider],
   layout: ui.Panel.Layout.flow('vertical'),
-  style: {position: 'bottom-right',width: '520px'}
+  style: {position: 'bottom-left'}
 });
 
 Map.add(panel);
