@@ -41,5 +41,3 @@ var panel = ui.Panel({
 });
 
 Map.add(panel);
-
-print (slider);
