@@ -1,3 +1,7 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var geometry = ee.FeatureCollection("users/masanellia/provincia");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
 Map.setCenter(-60, -36, 6);
 
 function addNDVI(image) {
@@ -11,8 +15,9 @@ var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
 var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate(since, to).filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',3);
 var NDVI = S2Collection.map(addNDVI).select(['NDVI']);
 
-var NDVI_max= NDVI.reduce(ee.Reducer.percentile([95])).clip(geometry);
+var NDVI_max = NDVI.reduce(ee.Reducer.percentile([95])).clip(geometry);
 Map.addLayer(NDVI_max, {min:0.3, max:0.9, palette: ndvi_pal}, 'NDVI_p95');
 
-var thres = NDVI.gte(0.7).rename('thres');
-Map.addLayer(thres, {min:0.3, max:0.9, palette: ndvi_pal}, 'NDVI_p95');
+var NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.7));
+Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral');
+
