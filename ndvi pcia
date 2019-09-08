@@ -1,0 +1,18 @@
+Map.setCenter(-60, -36, 6);
+
+function addNDVI(image) {
+  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+}
+
+var to = new Date();
+var since = new Date(to -1000 * 60 * 60 * 24 * 30);
+var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
+
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate(since, to).filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',3);
+var NDVI = S2Collection.map(addNDVI).select(['NDVI']);
+
+var NDVI_max= NDVI.reduce(ee.Reducer.percentile([95])).clip(geometry);
+Map.addLayer(NDVI_max, {min:0.3, max:0.9, palette: ndvi_pal}, 'NDVI_p95');
+
+var thres = NDVI.gte(0.7).rename('thres');
+Map.addLayer(thres, {min:0.3, max:0.9, palette: ndvi_pal}, 'NDVI_p95');
