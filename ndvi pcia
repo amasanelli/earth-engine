@@ -17,21 +17,21 @@ var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).fi
 var NDVI = S2Collection.map(addNDVI).select(['NDVI']);
 
 var NDVI_max = NDVI.reduce(ee.Reducer.percentile([95])).clip(geometry);
-Map.addLayer(NDVI_max, {min:0, max:0.85, palette: ['5CFF69','005D07']}, 'NDVI_p95');
+Map.addLayer(NDVI_max, {min:0, max:0.85, palette: ['5CFF69','005D07']}, 'NDVI_max');
 
-var NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.7));
-Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral');
+var NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.75));
+Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral_0.7');
 
 var label = ui.Label('NDVI Umbral');
 
-var slider = ui.Slider();
+var slider = ui.Slider({min:0,max:1,step:0.01});
 
-slider.setValue(0.7);
+slider.setValue(0.75);
 slider.onChange(function(value) {
   var layer = Map.layers().get(1);
   Map.remove(layer);
   NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(value));
-  Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral');
+  Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral_' + String(value));
 });
 
 var panel = ui.Panel({
