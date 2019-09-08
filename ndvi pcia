@@ -34,12 +34,6 @@ slider.onChange(function(value) {
   Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral_' + String(value));
 });
 
-var panel = ui.Panel({
-  widgets: [label,slider],
-  layout: ui.Panel.Layout.flow('vertical'),
-  style: {position: 'bottom-left'}
-});
 
-Map.add(panel);
 
 print (slider);
