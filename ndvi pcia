@@ -11,12 +11,12 @@ function addNDVI(image) {
 var to = new Date();
 var since = new Date(to -1000 * 60 * 60 * 24 * 30);
 
-var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate(since, to).filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',10);
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate(since, to).filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',2);
 var NDVI = S2Collection.map(addNDVI).select(['NDVI']);
 
 var NDVI_max = NDVI.reduce(ee.Reducer.percentile([95])).clip(geometry);
-Map.addLayer(NDVI_max, {min:0.5, max:0.85, palette: ['5CFF69','005D07']}, 'NDVI_p95');
+Map.addLayer(NDVI_max, {min:0, max:0.85, palette: ['5CFF69','005D07']}, 'NDVI_p95');
 
-var NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.7));
+var NDVI_masked = NDVI_max.updateMask(NDVI_max.gte(0.75));
 Map.addLayer(NDVI_masked, {min: 0.5, max: 1, palette: ['00FFFF', '0000FF']}, 'NDVI_umbral');
 
