@@ -4,6 +4,8 @@ var geometry = ee.FeatureCollection("users/masanellia/provincia");
 
 Map.centerObject(geometry, 6);
 
+Map.setOptions("SATELLITE");
+
 function addNDVI(image) {
   return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
 }
