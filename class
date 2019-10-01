@@ -412,6 +412,7 @@ Map.addLayer(ndvi2, {min:0, max:1, palette: palette},"NDVI2");
     geometries:true
     });
 
+print ('training',training)
 var classifier = ee.Classifier.cart().train({
   features: training, 
   classProperty: 'class', 
