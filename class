@@ -330,9 +330,16 @@ print(greenness);
 
 var boundary = ee.FeatureCollection('ft:1rbhNtC1TqDBvY9Rt2BZR-DjhpIPuC3nU5kmz49WW');//Jorhat Boundary
 
-var image = ee.Image('LANDSAT/LT05/C01/T1_TOA/LT05_044034_20081011')
-  .select(['B1', 'B2', 'B3', 'B4', 'B5', 'B7']);
-  
+//var image = ee.Image('LANDSAT/LT05/C01/T1_TOA/LT05_044034_20081011').select(['B1', 'B2', 'B3', 'B4', 'B5', 'B7']);
+
+var image = ee.Image(sent2img
+.filterDate("2017-12-01","2018-01-30")
+.filterBounds(boundary)
+.map(maskS2clouds)
+.median()
+.select(['B1', 'B2', 'B3', 'B4', 'B5', 'B7'])
+);
+
 Map.setCenter(-122.3, 37.562, 10);
 print(greenness);
 // Make an Array Image, with a 1-D Array per pixel.
