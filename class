@@ -305,6 +305,9 @@ var sent2img = ee.ImageCollection("COPERNICUS/S2"),
             })]);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
+// Tasseled cap -> imagen multibanda, cada banda un mes
+
+
 function maskS2clouds(image) {
   var qa = image.select('QA60');
   var cloudBitMask = ee.Number(2).pow(10).int();
