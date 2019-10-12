@@ -353,6 +353,7 @@ var greennessArrayImage = ee.Image(greenness).matrixMultiply(arrayImage2D);
 var greennessImage = greennessArrayImage.arrayGet([0, 0]);
 
 var imgcol = ee.Image().addBands(greennessImage.rename('bb'))
+print (imgcol.bandNames())
 Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], min: 0, max: 0.5}, 'image');
 Map.addLayer(imgcol, {bands: ['bb'],min: -0.1, max: 0.1}, 'greenness');
 
