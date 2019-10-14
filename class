@@ -319,21 +319,11 @@ function maskS2clouds(image) {
 var greenness = ee.Array([[-0.0635,-0.1128,-0.1680,-0.3480,-0.3303,0.0852,0.3302,0.3165,0.0467,-0.0009,-0.4578,-0.4064,0.3625]]);
 var since = new Date(2017,3,1);
 var to = new Date(2017,4,1);
-var gimage = ee.Image();
+var loopsteps = ee.List.sequence(0,11,1);
 
-var image = ee.Image(sent2img
-    .filterDate(since,to)
-    .filterBounds(boundary)
-    .map(maskS2clouds)
-    .median()
-    .select(["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B8A"])
-  );
-var i;
-
-
-for (i=0;i<12;i++){
-  since.setMonth(since.getMonth()+i);
-  to.setMonth(to.getMonth()+i);
+var composites = ee.ImageCollection.fromImages(loopsteps.map(function(x){
+  since.setMonth(ee.Number(since.getMonth()).add(ee.Number(x).int()));
+  to.setMonth(ee.Number(to.getMonth()).add(ee.Number(x).int()));
 
   var image = ee.Image(sent2img
     .filterDate(since,to)
@@ -346,18 +336,17 @@ for (i=0;i<12;i++){
   var arrayImage2D = image.toArray().toArray(1);
   var greennessArrayImage = ee.Image(greenness).matrixMultiply(arrayImage2D);
   var greennessImage = greennessArrayImage.arrayGet([0, 0]);
-  gimage.addBands(greennessImage.rename('bb'+i));
-}
+  return greennessImage.rename(ee.String('bb').cat(ee.String(ee.Number(x).int())));
+}));
 
 
 
-
-print (gimage.bandNames());
+print(composites);
 
 
 
 //Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], min: 0, max: 0.5}, 'image');
-Map.addLayer(gimage, {bands: ['bb1'],min: -0.1, max: 0.1}, 'greenness');
+//Map.addLayer(gimage, {bands: ['bb1'],min: -0.1, max: 0.1}, 'greenness');
 
 //var boundary = ee.FeatureCollection('ft:1ABffZYEE4XhMTOXsoSfWENKXBK2fQfOrdMplEaVo');//Midnapur Boundary
 
