@@ -337,7 +337,7 @@ var composites = ee.ImageCollection.fromImages(loopsteps.map(function(x){
   var greennessArrayImage = ee.Image(greenness).matrixMultiply(arrayImage2D);
   var greennessImage = greennessArrayImage.arrayGet([0, 0]);
   return greennessImage.rename(ee.String('bb').cat(ee.String(ee.Number(x).int())));
-}));
+})).toBands();
 
 
 
