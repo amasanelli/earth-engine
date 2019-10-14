@@ -320,38 +320,38 @@ var greenness = ee.Array([[-0.0635,-0.1128,-0.1680,-0.3480,-0.3303,0.0852,0.3302
 var since = new Date(2017,3,1);
 var to = new Date(2017,4,1);
 
-function loop (i){
-  since.setMonth(since.getMonth()+1);
-  to.setMonth(to.getMonth()+1);
-
-  var image = ee.Image(sent2img
-    .filterDate(since,to)
-    .filterBounds(boundary)
-    .map(maskS2clouds)
-    .median()
-    .select(["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B8A"])
-  );
-
-  var arrayImage2D = image.toArray().toArray(1);
-  var greennessArrayImage = ee.Image(greenness).matrixMultiply(arrayImage2D);
-  var greennessImage = greennessArrayImage.arrayGet([0, 0]).rename('bb'+i);
-  gimage.addBands(greennessImage);
+function loop (){
+  var i;
+  var gimage = ee.Image();
+  
+  for (i=0;i<12;i++){
+    since.setMonth(since.getMonth()+i);
+    to.setMonth(to.getMonth()+i);
+  
+    var image = ee.Image(sent2img
+      .filterDate(since,to)
+      .filterBounds(boundary)
+      .map(maskS2clouds)
+      .median()
+      .select(["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B8A"])
+    );
+  
+    var arrayImage2D = image.toArray().toArray(1);
+    var greennessArrayImage = ee.Image(greenness).matrixMultiply(arrayImage2D);
+    var greennessImage = greennessArrayImage.arrayGet([0, 0]).rename('bb'+i);
+    gimage.addBands(greennessImage);
+  }
   return gimage;
 }
 
-var gimage = ee.Image();
-var i;
 
-for (i=0;i<12;i++){
-  var band = loop(i);
-  print (band);
-  
-  print (gimage.bandNames())
-}
+var gimage = loop();
+print (gimage.bandNames());
+
 
 
 //Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], min: 0, max: 0.5}, 'image');
-Map.addLayer(image, {bands: ['bb1'],min: -0.1, max: 0.1}, 'greenness');
+Map.addLayer(gimage, {bands: ['bb1'],min: -0.1, max: 0.1}, 'greenness');
 
 //var boundary = ee.FeatureCollection('ft:1ABffZYEE4XhMTOXsoSfWENKXBK2fQfOrdMplEaVo');//Midnapur Boundary
 
