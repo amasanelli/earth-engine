@@ -339,8 +339,9 @@ function loop (i){
   return greennessImage;
 }
 
-
-var image = ee.Image().addBands(loop(1));
+for (y=0;y<12;y++){
+  var image = ee.Image().addBands(loop(y));
+}
 
 //Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], min: 0, max: 0.5}, 'image');
 Map.addLayer(image, {bands: ['bb1'],min: -0.1, max: 0.1}, 'greenness');
