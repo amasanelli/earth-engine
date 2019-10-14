@@ -335,15 +335,20 @@ function loop (i){
   var arrayImage2D = image.toArray().toArray(1);
   var greennessArrayImage = ee.Image(greenness).matrixMultiply(arrayImage2D);
   var greennessImage = greennessArrayImage.arrayGet([0, 0]).rename('bb'+i);
+  gimage.addBands(greennessImage);
+  return gimage;
+}
+
+var gimage = ee.Image();
+var i;
+
+for (i=0;i<12;i++){
+  var band = loop(i);
+  print (band);
   
-  return greennessImage;
+  print (gimage.bandNames())
 }
 
-var image = ee.Image();
-
-for (var y=0;y<12;y++){
-  image.addBands(loop(y));
-}
 
 //Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], min: 0, max: 0.5}, 'image');
 Map.addLayer(image, {bands: ['bb1'],min: -0.1, max: 0.1}, 'greenness');
