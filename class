@@ -316,7 +316,7 @@ function maskS2clouds(image) {
   return image.updateMask(mask).divide(10000);
 }
 
-var greenness = ee.Array([[-0.2848,-0.2435,-0.5436,0,0,0]]);
+var greenness = ee.Array([[-0.0635,-0.1128,-0.1680,-0.3480,-0.3303,0.0852,0.3302,0.3165,0.0467,-0.0009,-0.4578,-0.4064,0.3625]]);
 
 var d = new Date(2019,0,1);
 d.setMonth(d.getMonth()+3);
