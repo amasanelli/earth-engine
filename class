@@ -335,8 +335,10 @@ function loop (i){
   var arrayImage2D = image.toArray().toArray(1);
   var greennessArrayImage = ee.Image(greenness).matrixMultiply(arrayImage2D);
   var greennessImage = greennessArrayImage.arrayGet([0, 0]).rename('bb'+i);
+  
   return greennessImage;
 }
+
 
 var image = ee.Image().addBands(loop(1));
 
