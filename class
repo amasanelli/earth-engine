@@ -317,7 +317,6 @@ function maskS2clouds(image) {
 }
 
 var greenness = ee.Array([[-0.0635,-0.1128,-0.1680,-0.3480,-0.3303,0.0852,0.3302,0.3165,0.0467,-0.0009,-0.4578,-0.4064,0.3625]]);
-
 var loopsteps = ee.List.sequence(0,11,1);
 var start = ee.Date.fromYMD(2017,3,1);
 
@@ -347,7 +346,10 @@ print(composites);
 
 
 //Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], min: 0, max: 0.5}, 'image');
-//Map.addLayer(gimage, {bands: ['bb1'],min: -0.1, max: 0.1}, 'greenness');
+Map.addLayer(composites, {bands: ['8_gb8'],min: -0.1, max: 0.1}, 'greenness');
+
+
+var clip = composites.clip(boundary);
 
 //var boundary = ee.FeatureCollection('ft:1ABffZYEE4XhMTOXsoSfWENKXBK2fQfOrdMplEaVo');//Midnapur Boundary
 
@@ -425,10 +427,11 @@ var palette = ['FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718',
 Map.addLayer(ndvi, {min:0, max:1, palette: palette},"NDVI");
 Map.addLayer(ndvi2, {min:0, max:1, palette: palette},"NDVI2");
 // -------- Training Classes 
-
+*/
  var newfc = wb.merge(plantation).merge(agriland1).merge(agriland2).merge(habitation).merge(sandyarea).merge(deepplantation);
-    var bands = ['nd','nd2'];
-    var training = clip.select(bands).sampleRegions({
+    print(newfc)
+    var bands = composites.bandNames();
+    var training = composites.sampleRegions({
     collection: newfc, 
     properties: ['class'], 
     scale: 20,
@@ -451,4 +454,3 @@ Map.addLayer(classified,
 var trainAccuracy = classifier.confusionMatrix();
 print('Resubstitution error matrix: ', trainAccuracy);
 print('Training overall accuracy: ', trainAccuracy.accuracy());
-*/
