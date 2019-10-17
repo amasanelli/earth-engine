@@ -13,12 +13,12 @@ function maskS2clouds(image) {
 }
 
 var greenness = ee.Array([[-0.0635,-0.1128,-0.1680,-0.3480,-0.3303,0.0852,0.3302,0.3165,0.0467,-0.0009,-0.4578,-0.4064,0.3625]]);
-var loopsteps = ee.List.sequence(0,11,2);
+var loopsteps = ee.List.sequence(0,11,1);
 var start = ee.Date.fromYMD(2017,3,1);
 
 var composites = ee.ImageCollection.fromImages(loopsteps.map(function(i){
   var since = start.advance(ee.Number(i),'month');
-  var to = start.advance(ee.Number(i).add(2),'month');
+  var to = start.advance(ee.Number(i).add(1),'month');
 
   var image = ee.Image(sent2img
     .filterDate(since,to)
