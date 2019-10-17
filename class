@@ -1,312 +1,20 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var sent2img = ee.ImageCollection("COPERNICUS/S2"),
-    wb = /* color: #1e82ff */ee.FeatureCollection(
-        [ee.Feature(
-            ee.Geometry.Point([94.19643508352601, 26.8745787337235]),
-            {
-              "class": 1,
-              "system:index": "0"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.2942820683893, 26.901831098862093]),
-            {
-              "class": 1,
-              "system:index": "1"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.04914962210023, 26.87243501049885]),
-            {
-              "class": 1,
-              "system:index": "2"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.34646712698304, 26.96610836345741]),
-            {
-              "class": 1,
-              "system:index": "3"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.2208494023871, 26.994437527808866],
-                  [94.22183645530458, 26.99302264841835],
-                  [94.22265184684511, 26.99329032966809],
-                  [94.22209394737001, 26.994093369595188]]]),
-            {
-              "class": 1,
-              "system:index": "4"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.46030808840317, 27.011710538914475],
-                  [94.45532990847153, 27.007887087005084],
-                  [94.45773316774887, 27.004828231839493],
-                  [94.4623680249266, 27.009569421868363]]]),
-            {
-              "class": 1,
-              "system:index": "5"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.14467123665827, 26.889433487782465],
-                  [94.1405513636114, 26.886830732094673],
-                  [94.14458540596979, 26.88529967133211],
-                  [94.15033606209772, 26.886601074302718],
-                  [94.1504218927862, 26.888285220604743]]]),
-            {
-              "class": 1,
-              "system:index": "6"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.20985964455622, 26.755237055423873]),
-            {
-              "class": 1,
-              "system:index": "7"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.20960215249079, 26.751404917516407]),
-            {
-              "class": 1,
-              "system:index": "8"
-            })]),
-    plantation = /* color: #1c8b08 */ee.FeatureCollection(
-        [ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.27952130521089, 26.817850183322374],
-                  [94.2791994401291, 26.8173905872199],
-                  [94.28007920468599, 26.817352287460565],
-                  [94.28025086606294, 26.817850183322374]]]),
-            {
-              "class": 2,
-              "system:index": "0"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.29173072064668, 26.816011787730613],
-                  [94.29128010953218, 26.81557133435902],
-                  [94.29168780530244, 26.815284081238072],
-                  [94.29218133176118, 26.815456433197994]]]),
-            {
-              "class": 2,
-              "system:index": "1"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.29565843169462, 26.813288168833598],
-                  [94.29499324385893, 26.81323071711049],
-                  [94.29546531264555, 26.812866855521296]]]),
-            {
-              "class": 2,
-              "system:index": "2"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.37583203305508, 26.70255946164269],
-                  [94.37546725262905, 26.70200355233711],
-                  [94.3763041018417, 26.70190770563089],
-                  [94.37658305157925, 26.702367769085157]]]),
-            {
-              "class": 2,
-              "system:index": "3"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.38162560452724, 26.700239960033098],
-                  [94.38192601193691, 26.699549851264536],
-                  [94.38244099606777, 26.700086602890277],
-                  [94.38211913098598, 26.70052750411949]]]),
-            {
-              "class": 2,
-              "system:index": "4"
-            })]),
-    agriland1 = /* color: #88ff72 */ee.FeatureCollection(
-        [ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.40389586963943, 26.661104596659143],
-                  [94.40316630878738, 26.660011547399275],
-                  [94.40406753101638, 26.65949378356934],
-                  [94.40514041462234, 26.659992371003018],
-                  [94.40460397281936, 26.66093201062994]]]),
-            {
-              "class": 3,
-              "system:index": "0"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.42357255497268, 26.69348861926417],
-                  [94.42174865284255, 26.69348861926417],
-                  [94.42226363697341, 26.6919932897132],
-                  [94.42301465549758, 26.692050802751066]]]),
-            {
-              "class": 3,
-              "system:index": "1"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.43586780109695, 26.692779298718296],
-                  [94.43494512119582, 26.69166738195039],
-                  [94.43651153126052, 26.69082385164806],
-                  [94.43784190693191, 26.692127486756394],
-                  [94.43717671909621, 26.692798469601914]]]),
-            {
-              "class": 3,
-              "system:index": "2"
-            })]),
-    agriland2 = /* color: #00ffff */ee.FeatureCollection(
-        [ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.27485090993218, 26.837408300491113],
-                  [94.27390677235894, 26.836450971789517],
-                  [94.27631003163629, 26.835646809426073],
-                  [94.27764040730767, 26.8371785423408],
-                  [94.27579504750543, 26.838020986612943]]]),
-            {
-              "class": 4,
-              "system:index": "0"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.3199056252547, 26.84421854002383],
-                  [94.31827484217365, 26.842418863616192],
-                  [94.31960521784504, 26.841729618266985],
-                  [94.32162223902424, 26.84215082425674],
-                  [94.32162223902424, 26.84337614186256]]]),
-            {
-              "class": 4,
-              "system:index": "1"
-            })]),
-    habitation = /* color: #c2b2bc */ee.FeatureCollection(
-        [ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.215224062586, 26.759107383551534],
-                  [94.21479490914362, 26.758590070097352],
-                  [94.21548155465143, 26.758379312088945],
-                  [94.21571758904474, 26.75885830699722]]]),
-            {
-              "class": 5,
-              "system:index": "0"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.21548155465143, 26.756578273165296]),
-            {
-              "class": 5,
-              "system:index": "1"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.2153849951269, 26.75870502884627]),
-            {
-              "class": 5,
-              "system:index": "2"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.21702114262598, 26.75635793133726]),
-            {
-              "class": 5,
-              "system:index": "3"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.21853927292841, 26.75773266575997]),
-            {
-              "class": 5,
-              "system:index": "4"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.21500948586481, 26.7565734831301]),
-            {
-              "class": 5,
-              "system:index": "5"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.20289030371623, 26.7566644937643]),
-            {
-              "class": 5,
-              "system:index": "6"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.2045425444694, 26.7578045155338]),
-            {
-              "class": 5,
-              "system:index": "7"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.20649519263225, 26.758532590679295]),
-            {
-              "class": 5,
-              "system:index": "8"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.21405007307533, 26.745688754797012]),
-            {
-              "class": 5,
-              "system:index": "9"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.21774079267982, 26.745803726595184]),
-            {
-              "class": 5,
-              "system:index": "10"
-            }),
-        ee.Feature(
-            ee.Geometry.Point([94.2142431921244, 26.746450440793453]),
-            {
-              "class": 5,
-              "system:index": "11"
-            })]),
-    sandyarea = /* color: #fbff2a */ee.FeatureCollection(
-        [ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.12544516243952, 26.89081139299204],
-                  [94.12458685555475, 26.88721349404406],
-                  [94.12896422066706, 26.88637141604404],
-                  [94.13188246407526, 26.890505193286575]]]),
-            {
-              "class": 6,
-              "system:index": "0"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.213421618128, 26.903977195196983],
-                  [94.21067503609675, 26.90152785982745],
-                  [94.21393660225885, 26.90053280215843],
-                  [94.21719816842096, 26.903288324994094],
-                  [94.21848562874811, 26.905814161858626]]]),
-            {
-              "class": 6,
-              "system:index": "1"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.31847838082331, 26.927472806081518],
-                  [94.31787756600397, 26.9233403821649],
-                  [94.32079580941218, 26.923646492831292],
-                  [94.32276991524714, 26.92693713003935]]]),
-            {
-              "class": 6,
-              "system:index": "2"
-            })]),
-    deepplantation = /* color: #008800 */ee.FeatureCollection(
-        [ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.50253184859525, 26.715309886938787],
-                  [94.5009010655142, 26.71454320062101],
-                  [94.5023601872183, 26.71392984784932]]]),
-            {
-              "class": 7,
-              "system:index": "0"
-            }),
-        ee.Feature(
-            ee.Geometry.Polygon(
-                [[[94.52939685408842, 26.721213198635567],
-                  [94.52862437789213, 26.71990989641401],
-                  [94.53068431441557, 26.71983323111271],
-                  [94.530941806481, 26.721213198635567]]]),
-            {
-              "class": 7,
-              "system:index": "1"
-            })]),
-    boundary = ee.FeatureCollection("ft:1rbhNtC1TqDBvY9Rt2BZR-DjhpIPuC3nU5kmz49WW");
+var sent2img = ee.ImageCollection("COPERNICUS/S2");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
-// Tasseled cap -> imagen multibanda, cada banda un mes
+// Manually created polygons.
+var forest1 = ee.Geometry.Rectangle(-63.0187, -9.3958, -62.9793, -9.3443);
+var forest2 = ee.Geometry.Rectangle(-62.8145, -9.206, -62.7688, -9.1735);
+var nonForest1 = ee.Geometry.Rectangle(-62.8161, -9.5001, -62.7921, -9.4486);
+var nonForest2 = ee.Geometry.Rectangle(-62.6788, -9.044, -62.6459, -8.9986);
+
+// Make a FeatureCollection from the hand-made geometries.
+var polygons = ee.FeatureCollection([
+  ee.Feature(nonForest1, {'class': 0}),
+  ee.Feature(nonForest2, {'class': 0}),
+  ee.Feature(forest1, {'class': 1}),
+  ee.Feature(forest2, {'class': 1}),
+]);
 
 function maskS2clouds(image) {
   var qa = image.select('QA60');
@@ -326,7 +34,7 @@ var composites = ee.ImageCollection.fromImages(loopsteps.map(function(i){
 
   var image = ee.Image(sent2img
     .filterDate(since,to)
-    .filterBounds(boundary)
+    .filterBounds(polygons)
     .map(maskS2clouds)
     .median()
     .select(["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B8A"])
@@ -339,118 +47,23 @@ var composites = ee.ImageCollection.fromImages(loopsteps.map(function(i){
 
 })).toBands();
 
-
-
 print(composites);
 
+var label = 'class';
+var bands = composites.bandNames();
 
-
-//Map.addLayer(image, {bands: ['B4', 'B3', 'B2'], min: 0, max: 0.5}, 'image');
-Map.addLayer(composites, {bands: ['8_gb8'],min: -0.1, max: 0.1}, 'greenness');
-
-
-var clip = composites.clip(boundary);
-
-//var boundary = ee.FeatureCollection('ft:1ABffZYEE4XhMTOXsoSfWENKXBK2fQfOrdMplEaVo');//Midnapur Boundary
-
-/*
-
-
-
-// ---------  Import of Images (Sentinel _ 2 multispectral)
-
-
-var image = ee.ImageCollection(sent2img
-.filterDate("2017-12-01","2018-01-30")
-.filterBounds(boundary)
-.map(maskS2clouds)
-.sort("CLOUD_COVERAGE_ASSESSMENT")
-.max()
-);
-
-//----------- Selection of Bands
-//var bands = ['B2', 'B3', 'B4','B5','B6','B7','B8','B8A'];
-
-
-//----------  Preprocessing 
-
-var mosaic = image.mosaic()
-var clip = mosaic.clip(boundary);
-print('clip', clip);
-
-
-//----------   FCC creation and visualisation of AOI     
-//Map.addLayer(clip, {bands: ['B8','B4','B3'], min: 0, max: 0.3},'clip');
-
-
-
-// -----------  NDVI  calculation
-
-var ndvi = clip.expression(
-    ' ((NIR - RED) / (NIR + RED))', {
-      'NIR': clip.select('B8'),
-      'RED': clip.select('B4'),
-}).rename('nd');
-
-clip = clip.addBands(ndvi);
-
-var image2 = ee.ImageCollection(sent2img
-.filterDate("2018-06-01","2019-01-30")
-.filterBounds(boundary)
-.map(maskS2clouds)
-.sort("CLOUD_COVERAGE_ASSESSMENT")
-.median()
-);
-
-var mosaic2 = image2.mosaic()
-var clip2 = mosaic2.clip(boundary);
-print('clip', clip);
-
-var ndvi2 = clip2.expression(
-    ' ((NIR - RED) / (NIR + RED))', {
-      'NIR': clip2.select('B8'),
-      'RED': clip2.select('B4'),
-}).rename('nd2');
-
-clip = clip.addBands(ndvi2);
-
-print(ndvi);
-//---------- Colour Palette
-
-var palette = ['FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718',
-               '74A901', '66A000', '529400', '3E8601', '207401', '056201',
-               '004C00', '023B01', '012E01', '011D01', '011301'];
-
-
-// ---------- Map display
-
-Map.addLayer(ndvi, {min:0, max:1, palette: palette},"NDVI");
-Map.addLayer(ndvi2, {min:0, max:1, palette: palette},"NDVI2");
-// -------- Training Classes 
-*/
- var newfc = wb.merge(plantation).merge(agriland1).merge(agriland2).merge(habitation).merge(sandyarea).merge(deepplantation);
-    print(newfc)
-    var bands = composites.bandNames();
-    var training = composites.sampleRegions({
-    collection: newfc, 
-    properties: ['class'], 
-    scale: 20,
-    geometries:true
-    });
-
-print ('training',training)
-var classifier = ee.Classifier.cart().train({
-  features: training, 
-  classProperty: 'class', 
-  inputProperties: bands
+var training = composites.select(bands).sampleRegions({
+  collection: polygons,
+  properties: [label],
+  scale: 30
 });
+var trained = ee.Classifier.randomForest().train(training, label, bands);
+var classified = composites.select(bands).classify(trained);
 
-var classified = clip.select(bands).classify(classifier);
+var trainAccuracy = trained.confusionMatrix();
 
-Map.addLayer(classified, 
-{min: 1, max: 7, palette: ['#1e82ff', '#1c8b08', '#88ff72','#88ff72','#c2b2bc','#fbff2a','#008800']}, 
-'classification');
-
-var trainAccuracy = classifier.confusionMatrix();
 print('Resubstitution error matrix: ', trainAccuracy);
 print('Training overall accuracy: ', trainAccuracy.accuracy());
+Map.addLayer(classified,{min: 0, max: 2, palette: ['red', 'green', 'blue']},'classification');
+
+Map.setCenter(-62.836, -9.2399, 9);
