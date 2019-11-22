@@ -23,8 +23,8 @@ var title = {
 
 print(ui.Chart.image.series(mergedCollection, geometry).setOptions(title));
 
-/*
-var S1dates = fapar.toList(fapar.size()).map(function(img){
+
+var S1dates = fapar.toList(mergedCollection.size()).map(function(img){
   var value = ee.Image(img).reduceRegion(ee.Reducer.mean(), geometry).get('Fpar');
   var idate = ee.Image(img).date();
   var fecha = ee.String(idate.get('year')).cat('-').cat(idate.get('month')).cat('-').cat(idate.get('day'));
@@ -32,4 +32,3 @@ var S1dates = fapar.toList(fapar.size()).map(function(img){
 });
 
 print(S1dates);
-*/
