@@ -1,0 +1,27 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var geometry = /* color: #d63000 */ee.Geometry.Polygon(
+        [[[-60.82949200103815, -36.01412282226637],
+          [-58.77504864166315, -36.44835825309486],
+          [-60.23623028228815, -35.26412940071591]]]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
+var dataset = ee.ImageCollection('MODIS/006/MCD15A3H').filterBounds(geometry).filterDate('2019-01-01', '2020-12-31');
+
+var fapar = dataset.select('Fpar');
+
+var title = {
+  title: 'Evolución NDVI',
+  hAxis: {title: 'Tiempo'},
+  vAxis: {title: 'fAPAR'},
+};
+
+print(ui.Chart.image.series(fapar, geometry).setOptions(title));
+
+var S1dates = fapar.toList(fapar.size()).map(function(img){
+  var value = ee.Image(img).reduceRegion(ee.Reducer.mean(), geometry).get('Fapar');
+  var idate = ee.Image(img).date();
+  var fecha = ee.String(idate.get('year')).cat('-').cat(idate.get('month')).cat('-').cat(idate.get('day'));
+  return [value,fecha];
+});
+
+print(S1dates);
