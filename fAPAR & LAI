@@ -21,7 +21,7 @@ var title = {
   vAxis: {title: 'Valor'},
 };
 
-print(ui.Chart.image.series(mergedCollection, geometry).setOptions(title));
+print(ui.Chart.image.series(fapar, geometry).setOptions(title));
 
 
 var S1dates = fapar.toList(mergedCollection.size()).map(function(img){
