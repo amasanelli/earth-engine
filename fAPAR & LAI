@@ -1,8 +1,12 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var geometry = /* color: #d63000 */ee.Geometry.Polygon(
-        [[[-60.82949200103815, -36.01412282226637],
-          [-58.77504864166315, -36.44835825309486],
-          [-60.23623028228815, -35.26412940071591]]]);
+var geometry = /* color: #98ff00 */ee.Geometry.Polygon(
+        [[[-59.00456603146131, -38.6569931537904],
+          [-58.99675543880994, -38.66319271108697],
+          [-58.97778685665662, -38.658300132131885],
+          [-58.9833658514076, -38.653608304153394],
+          [-58.9857261953407, -38.6544461531175],
+          [-58.986412840848516, -38.65458020804235],
+          [-58.98752863979871, -38.65230124020163]]]);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 var dataset = ee.ImageCollection('MODIS/006/MCD15A3H').filterBounds(geometry).filterDate('2019-01-01', '2020-12-31');
