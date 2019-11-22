@@ -8,20 +8,24 @@ var geometry = /* color: #d63000 */ee.Geometry.Polygon(
 var dataset = ee.ImageCollection('MODIS/006/MCD15A3H').filterBounds(geometry).filterDate('2019-01-01', '2020-12-31');
 
 var fapar = dataset.select('Fpar');
+var lai = dataset.select('Lai');
+var mergedCollection = fapar.merge(lai);
 
 var title = {
-  title: 'Evolución NDVI',
+  title: 'Evolución fAPAR & LAI',
   hAxis: {title: 'Tiempo'},
-  vAxis: {title: 'fAPAR'},
+  vAxis: {title: 'Valor'},
 };
 
-print(ui.Chart.image.series(fapar, geometry).setOptions(title));
+print(ui.Chart.image.series(mergedCollection, geometry).setOptions(title));
 
+/*
 var S1dates = fapar.toList(fapar.size()).map(function(img){
-  var value = ee.Image(img).reduceRegion(ee.Reducer.mean(), geometry).get('Fapar');
+  var value = ee.Image(img).reduceRegion(ee.Reducer.mean(), geometry).get('Fpar');
   var idate = ee.Image(img).date();
   var fecha = ee.String(idate.get('year')).cat('-').cat(idate.get('month')).cat('-').cat(idate.get('day'));
   return [value,fecha];
 });
 
 print(S1dates);
+*/
