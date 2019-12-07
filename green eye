@@ -18,10 +18,10 @@ function addNDVI(image) {
 }
 
 function recorte(feature){
-  var filNDVI = unfNDVI.filterDate('2019-01-01', '2019-02-01');
+  var filNDVI = unfNDVI.filterDate('2019-01-01', '2019-02-01').mean().clip(feature);
   var mean = filNDVI.reduceRegion({
     reducer: ee.Reducer.mean(),
-    geometry: feature,
+    geometry: feature.geometry(),
     scale: 30,
     maxPixels: 1e9
   });
