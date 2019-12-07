@@ -1,0 +1,34 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var lotes = ee.FeatureCollection("users/masanellia/test");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
+
+var cloudBitMask = ee.Number(2).pow(10).int();
+var cirrusBitMask = ee.Number(2).pow(11).int();
+
+function MaskS2Clouds(image) {
+  var qa = image.select('QA60');
+  var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(
+             qa.bitwiseAnd(cirrusBitMask).eq(0));
+  return image.updateMask(mask);
+}
+
+function addNDVI(image) {
+  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+}
+
+function recorte(feature){
+  var filNDVI = unfNDVI.filterDate('2019-01-01', '2019-02-01');
+  var mean = filNDVI.reduce(ee.Reducer.mean).clip(feature);
+  return feature.set({areaHa:mean});
+}
+
+var geometry = ee.FeatureCollection("users/masanellia/provincia");
+var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2019-01-01', '2020-12-31').filter(filtro);
+var S2CloudMasked = S2Collection.map(MaskS2Clouds);
+var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
+
+var sape = lotes.map(recorte);
+
+print (sape);
