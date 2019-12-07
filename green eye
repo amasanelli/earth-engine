@@ -32,7 +32,7 @@ var geometry = ee.FeatureCollection("users/masanellia/provincia");
 var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2018-01-01', '2020-01-01').filter(filtro);
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
-var unfNDVI = S2CloudMasked.map(addNDVI).select(['INDEX']);
+var unfINDEX = S2CloudMasked.map(addNDVI).select(['INDEX']);
 
 var months = ee.List([1,4]);
 
@@ -43,8 +43,8 @@ var sape = lotes.map(function(feature){
     var x = ee.Number(m);
     var start = ee.Date.fromYMD(2019,x,01);
     var end = ee.Date.fromYMD(2019,x.add(1),01);
-    var filNDVI = unfNDVI.filterDate(start,end).mean();
-    var mean = ee.Number(filNDVI.reduceRegion({
+    var filINDEX = unfINDEX.filterDate(start,end).mean();
+    var mean = ee.Number(filINDEX.reduceRegion({
       reducer: ee.Reducer.mean(),
       geometry: feature.geometry(),
       scale: 30,
