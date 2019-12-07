@@ -24,7 +24,7 @@ function recorte(feature){
     geometry: feature.geometry(),
     scale: 30,
     maxPixels: 1e9
-  });
+  }.get('NDVI'));
   return feature.set({areaHa:mean});
 }
 
