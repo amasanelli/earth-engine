@@ -14,43 +14,49 @@ function MaskS2Clouds(image) {
 }
 
 function addNDVI(image) {
-  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+  var evi = image.expression(
+    '2.5 * ( (NIR-RED) / (NIR + 6 * RED - 7.5 * BLUE))', 
+    {
+      'NIR':image.select('B8'),
+      'RED':image.select('B4'),
+      'BLUE':image.select('B2')
+    }
+  );
+  //return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+  return evi.rename('INDEX');
 }
 
-function recorte(feature){
-  var mean = ee.Number(filNDVI.reduceRegion({
-    reducer: ee.Reducer.mean(),
-    geometry: feature.geometry(),
-    scale: 30,
-    maxPixels: 1e9
-  }).get('NDVI'));
-  return feature.set({nombre:mean});
-}
+
 
 var geometry = ee.FeatureCollection("users/masanellia/provincia");
 var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
-var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2019-01-01', '2020-12-31').filter(filtro);
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2018-01-01', '2020-01-01').filter(filtro);
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
-var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
+var unfNDVI = S2CloudMasked.map(addNDVI).select(['INDEX']);
 
 var months = ee.List([1,4]);
 
-var garca = months.map(function(m) {
+var sape = lotes.map(function(feature){
   
+  var garca = months.map(function(m){
+    
+    var x = ee.Number(m);
+    var start = ee.Date.fromYMD(2019,x,01);
+    var end = ee.Date.fromYMD(2019,x.add(1),01);
+    var filNDVI = unfNDVI.filterDate(start,end).mean();
+    var mean = ee.Number(filNDVI.reduceRegion({
+      reducer: ee.Reducer.mean(),
+      geometry: feature.geometry(),
+      scale: 30,
+      maxPixels: 1e9
+    }).get('INDEX'));
+    
+    return mean;
+  });
   
-  var x = ee.Number(m);
-  var start = ee.Date.fromYMD(2019,x,01);
-  
-  var end = ee.Date.fromYMD(2019,x.add(1),01);
-
-  
-  var filNDVI = unfNDVI.filterDate(start,end).mean();
- 
-  var sape = lotes.map(recorte);
-  
-  return sape;
+  return feature.set({ndvis:garca});
 });
 
 
 
-print (garca);
+print (sape);
