@@ -15,6 +15,7 @@ function MaskS2Clouds(image) {
 }
 
 function addINDEX(image) {
+  /*
   var evi = image.expression(
     '2.5 * ( (NIR-RED) / (NIR + 6 * RED - 7.5 * BLUE))', 
     {
@@ -23,7 +24,8 @@ function addINDEX(image) {
       'BLUE':image.select('B2')
     }
   );
-  //return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('INDEX'));
+  */
+  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('INDEX'));
   var EVI = evi.multiply(10).toInt8().rename('INDEX');
   return EVI;
 }
@@ -41,7 +43,7 @@ var lotesfinal = lotes.map(function(feature){
     var x = ee.Number(m);
     var start = ee.Date.fromYMD(2018,05,01).advance(m, 'month');
     var end = ee.Date.fromYMD(2018,06,01).advance(m, 'month');
-    var filINDEX = unfINDEX.filterDate(start,end).reduce(ee.Reducer.percentile([90]));
+    var filINDEX = unfINDEX.filterDate(start,end).max();
     var mean = ee.Number(filINDEX.reduceRegion({
       reducer: ee.Reducer.mean(),
       geometry: feature.geometry(),
