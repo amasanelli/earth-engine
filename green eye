@@ -33,7 +33,7 @@ var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(lotes).filte
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
 var unfINDEX = S2CloudMasked.map(addINDEX).select(['INDEX']);
 
-var months = ee.List([0]);
+var months = ee.List([0,1,2,3,4]);
 
 var lotesfinal = lotes.map(function(feature){
   
