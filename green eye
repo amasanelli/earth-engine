@@ -14,7 +14,7 @@ function MaskS2Clouds(image) {
   return image.updateMask(mask);
 }
 
-function addNDVI(image) {
+function addINDEX(image) {
   var evi = image.expression(
     '2.5 * ( (NIR-RED) / (NIR + 6 * RED - 7.5 * BLUE))', 
     {
@@ -29,7 +29,7 @@ function addNDVI(image) {
 
 var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2018-05-01', '2019-01-01').filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5));
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
-var unfINDEX = S2CloudMasked.map(addNDVI).select(['INDEX']);
+var unfINDEX = S2CloudMasked.map(addINDEX).select(['INDEX']);
 
 var months = ee.List([5,6]);
 
