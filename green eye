@@ -38,8 +38,8 @@ var lotesfinal = lotes.map(function(feature){
   var medias = months.map(function(m){
     
     var x = ee.Number(m);
-    var start = ee.Date.fromYMD(2018,x,01);
-    var end = ee.Date.fromYMD(2018,x.add(1),01);
+    var start = ee.Date.fromYMD(2018,05,01).advance(m, 'month');
+    var end = ee.Date.fromYMD(2018,06,01).advance(m, 'month');
     var filINDEX = unfINDEX.filterDate(start,end).mean();
     var mean = ee.Number(filINDEX.reduceRegion({
       reducer: ee.Reducer.mean(),
