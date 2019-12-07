@@ -26,7 +26,7 @@ function addINDEX(image) {
   );
   
   //return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('INDEX'));
-  return evi.rename('INDEX');
+  return image.addBands(evi.rename('INDEX'));
 }
 
 var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(lotes).filterDate('2018-05-01', '2019-01-01').filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5));
