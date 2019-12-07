@@ -23,7 +23,7 @@ function addNDVI(image) {
       'BLUE':image.select('B2')
     }
   );
-  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('INDEX'));
   return evi.rename('INDEX');
 }
 
