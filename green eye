@@ -58,3 +58,9 @@ var lotesfinal = lotes.map(function(feature){
 
 
 print (lotesfinal);
+
+Export.table.toDrive({
+  collection: lotesfinal,
+  description:'vectorsToDriveExample',
+  fileFormat: 'SHP'
+});
