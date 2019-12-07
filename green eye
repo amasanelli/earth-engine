@@ -17,7 +17,7 @@ function MaskS2Clouds(image) {
 function addINDEX(image) {
   
   var evi = image.expression(
-    '2.5 * (NIR-RED) / (1 + NIR + 2.4 * RED)', 
+    '2.5 * ( (NIR/10000) - (RED/10000) ) / ( 1 + (NIR/10000) + 2.4 * (RED/10000) )', 
     {
       'NIR':image.select('B8'),
       'RED':image.select('B4')
@@ -41,7 +41,7 @@ var lotesfinal = lotes.map(function(feature){
     var x = ee.Number(m);
     var start = ee.Date.fromYMD(2018,05,01).advance(m, 'month');
     var end = ee.Date.fromYMD(2018,06,01).advance(m, 'month');
-    var filINDEX = unfINDEX.filterDate(start,end).max();
+    var filINDEX = unfINDEX.filterDate(start,end).mean();
     var mean = ee.Number(filINDEX.reduceRegion({
       reducer: ee.Reducer.mean(),
       geometry: feature.geometry(),
