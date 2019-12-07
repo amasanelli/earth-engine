@@ -17,15 +17,14 @@ function addNDVI(image) {
   return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
 }
 
-function recorte(feature){
-  var filNDVI = unfNDVI.filterDate('2019-01-01', '2019-02-01').mean();
+function recorte(feature,nombre,filNDVI){
   var mean = ee.Number(filNDVI.reduceRegion({
     reducer: ee.Reducer.mean(),
     geometry: feature.geometry(),
     scale: 30,
     maxPixels: 1e9
   }).get('NDVI'));
-  return feature.set({areaHa:mean});
+  return feature.set({nombre:mean});
 }
 
 var geometry = ee.FeatureCollection("users/masanellia/provincia");
@@ -34,6 +33,18 @@ var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).fi
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
 var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
-var sape = lotes.map(recorte);
+var months = ee.List([1,4]);
 
-print (sape);
+var garca = ee.Featurecollection(months.map(function(m) {
+  var start = ee.Date.fromYMD(2019,m,01);
+  var end = ee.Date.fromYMD(2019,m+1,01);
+  var filNDVI = unfNDVI.filterDate(start,end).mean();
+  var nombre = "Mes" + m;
+  var sape = lotes.map(recorte,nombre,filNDVI);
+  return sape;
+}));
+
+
+
+
+print (lotes);
