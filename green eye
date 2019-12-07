@@ -17,7 +17,7 @@ function addNDVI(image) {
   return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
 }
 
-function recorte(feature,nombre,filNDVI){
+function recorte(feature){
   var mean = ee.Number(filNDVI.reduceRegion({
     reducer: ee.Reducer.mean(),
     geometry: feature.geometry(),
@@ -35,16 +35,15 @@ var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
 var months = ee.List([1,4]);
 
-var garca = ee.Featurecollection(months.map(function(m) {
+var garca = months.map(function(m) {
   var start = ee.Date.fromYMD(2019,m,01);
   var end = ee.Date.fromYMD(2019,m+1,01);
   var filNDVI = unfNDVI.filterDate(start,end).mean();
-  var nombre = "Mes" + m;
-  var sape = lotes.map(recorte,nombre,filNDVI);
+ 
+  var sape = lotes.map(recorte);
   return sape;
-}));
+});
 
 
 
-
-print (lotes);
+print (sape);
