@@ -31,15 +31,15 @@ var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).fi
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
 var unfINDEX = S2CloudMasked.map(addNDVI).select(['INDEX']);
 
-var months = ee.List([1,4]);
+var months = ee.List([5,6]);
 
 var lotesfinal = lotes.map(function(feature){
   
   var medias = months.map(function(m){
     
     var x = ee.Number(m);
-    var start = ee.Date.fromYMD(2019,x,01);
-    var end = ee.Date.fromYMD(2019,x.add(1),01);
+    var start = ee.Date.fromYMD(2018,x,01);
+    var end = ee.Date.fromYMD(2018,x.add(1),01);
     var filINDEX = unfINDEX.filterDate(start,end).mean();
     var mean = ee.Number(filINDEX.reduceRegion({
       reducer: ee.Reducer.mean(),
