@@ -1,5 +1,6 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var lotes = ee.FeatureCollection("users/masanellia/test");
+var lotes = ee.FeatureCollection("users/masanellia/test"),
+    geometry = ee.FeatureCollection("users/masanellia/provincia");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 
@@ -26,19 +27,15 @@ function addNDVI(image) {
   return evi.rename('INDEX');
 }
 
-
-
-var geometry = ee.FeatureCollection("users/masanellia/provincia");
-var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
-var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2018-01-01', '2020-01-01').filter(filtro);
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2018-01-01', '2020-01-01').filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5));
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
 var unfINDEX = S2CloudMasked.map(addNDVI).select(['INDEX']);
 
 var months = ee.List([1,4]);
 
-var sape = lotes.map(function(feature){
+var lotesfinal = lotes.map(function(feature){
   
-  var garca = months.map(function(m){
+  var medias = months.map(function(m){
     
     var x = ee.Number(m);
     var start = ee.Date.fromYMD(2019,x,01);
@@ -54,9 +51,9 @@ var sape = lotes.map(function(feature){
     return mean;
   });
   
-  return feature.set({ndvis:garca});
+  return feature.set({indices:medias});
 });
 
 
 
-print (sape);
+print (lotesfinal);
