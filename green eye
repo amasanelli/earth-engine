@@ -41,7 +41,7 @@ var lotesfinal = lotes.map(function(feature){
     var x = ee.Number(m);
     var start = ee.Date.fromYMD(2018,05,01).advance(m, 'month');
     var end = ee.Date.fromYMD(2018,06,01).advance(m, 'month');
-    var filINDEX = unfINDEX.filterDate(start,end).mean();
+    var filINDEX = unfINDEX.filterDate(start,end).max();
     var mean = ee.Number(filINDEX.reduceRegion({
       reducer: ee.Reducer.mean(),
       geometry: feature.geometry(),
