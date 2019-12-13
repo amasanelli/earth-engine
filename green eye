@@ -60,6 +60,6 @@ print (lotesfinal);
 Export.table.toDrive({
   collection: lotesfinal,
   folder: "earth_engine",
-  description:'vectorsToDriveExample',
+  description:'export',
   fileFormat: 'JSON'
 });
