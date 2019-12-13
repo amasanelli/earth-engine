@@ -59,6 +59,7 @@ print (lotesfinal);
 
 Export.table.toDrive({
   collection: lotesfinal,
+  folder: "earth_engine",
   description:'vectorsToDriveExample',
   fileFormat: 'JSON'
 });
