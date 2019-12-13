@@ -60,5 +60,5 @@ print (lotesfinal);
 Export.table.toDrive({
   collection: lotesfinal,
   description:'vectorsToDriveExample',
-  fileFormat: 'SHP'
+  fileFormat: 'JSON'
 });
