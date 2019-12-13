@@ -1,6 +1,6 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var geometry = ee.FeatureCollection("users/masanellia/provincia"),
-    lotes = ee.FeatureCollection("users/masanellia/Trigo1819");
+    lotes = ee.FeatureCollection("users/masanellia/TrigoCandeal1819");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 
