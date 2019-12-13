@@ -1,6 +1,6 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var lotes = ee.FeatureCollection("users/masanellia/test"),
-    geometry = ee.FeatureCollection("users/masanellia/provincia");
+var geometry = ee.FeatureCollection("users/masanellia/provincia"),
+    lotes = ee.FeatureCollection("users/masanellia/Cebada1819");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 
@@ -15,7 +15,6 @@ function MaskS2Clouds(image) {
 }
 
 function addINDEX(image) {
-  
   var evi = image.expression(
     '2.5 * ( (NIR/10000) - (RED/10000) ) / ( 1 + (NIR/10000) + 2.4 * (RED/10000) )', 
     {
@@ -23,7 +22,6 @@ function addINDEX(image) {
       'RED':image.select('B4')
     }
   );
-  
   //return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('INDEX'));
   return image.addBands(evi.rename('INDEX'));
 }
