@@ -1,0 +1,165 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
+    DEM = ee.Image("USGS/SRTMGL1_003"),
+    geometry = /* color: #98ff00 */ee.Geometry({
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -58.94829634987184,
+                -38.64791675984243
+              ],
+              [
+                -58.96194342933961,
+                -38.63859847884026
+              ],
+              [
+                -59.01249770485231,
+                -38.65750192830215
+              ],
+              [
+                -58.99816397987672,
+                -38.66768895294479
+              ],
+              [
+                -58.95730857216188,
+                -38.65354736386092
+              ]
+            ]
+          ],
+          "evenOdd": true
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -58.10696535508748,
+                -35.835800721299336
+              ],
+              [
+                -58.13194208543416,
+                -35.840045157387316
+              ],
+              [
+                -58.118895820785724,
+                -35.87308832415519
+              ],
+              [
+                -58.10833864610311,
+                -35.878095770459716
+              ],
+              [
+                -58.09529238145467,
+                -35.86008139488497
+              ]
+            ]
+          ],
+          "geodesic": true,
+          "evenOdd": true
+        }
+      ],
+      "coordinates": []
+    });
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
+//var lotes = ee.FeatureCollection(geometry2);
+var years = ee.List([2,4]);
+
+var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
+var cloudBitMask = ee.Number(2).pow(10).int();
+var cirrusBitMask = ee.Number(2).pow(11).int();
+
+function MaskS2Clouds(image) {
+  var qa = image.select('QA60');
+  var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(
+             qa.bitwiseAnd(cirrusBitMask).eq(0));
+  return image.updateMask(mask);
+}
+function addNDVI(image) {
+  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+}
+
+//var filtro = ee.Filter.and(ee.Filter.or(ee.Filter.calendarRange(10,11,'month'),ee.Filter.calendarRange(01,02,'month')),ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5));
+var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filter(filtro);
+var S2CloudMasked = S2Collection.map(MaskS2Clouds);
+var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
+
+var NDVI_max= unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
+Map.addLayer(NDVI_max, {min:0.4, max:0.8, palette: ndvi_pal}, 'NDVI_p90');
+Export.image.toDrive({image:NDVI_max,folder:'earth_engine',description:'NDVI_p90',scale:10,region:geometry,maxPixels:1e9,crs:'EPSG:32721'});
+
+var NDVI_min= unfNDVI.reduce(ee.Reducer.percentile([10])).clip(geometry);
+Map.addLayer(NDVI_min, {min:0, max:0.3, palette: ndvi_pal}, 'NDVI_p10');
+Export.image.toDrive({image:NDVI_min,folder:'earth_engine',description:'NDVI_p10',scale:10,region:geometry});
+
+ñ
+//CLUSTERS
+/*
+var training = NDVI_max.sample({region:geometry,scale:10,factor:1});
+var clusterer = ee.Clusterer.wekaKMeans(5).train(training);
+var result = NDVI_max.cluster(clusterer);
+Map.addLayer(result.randomVisualizer(), {}, 'clusters');
+*/
+
+//DEM
+
+var elevation = DEM.select('elevation').clip(geometry);
+var p90_lote = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([90]),geometry:geometry,maxPixels:1e9,scale:30,}).get('elevation'));
+var p10_lote = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]),geometry:geometry,maxPixels:1e9,scale:30,}).get('elevation'));
+var dem_pal = ['#33E6FF','#734F00'];
+Map.addLayer(elevation, {min:p10_lote.getInfo(), max:p90_lote.getInfo(), palette: dem_pal}, 'DEM');
+Export.image.toDrive({image:elevation,folder:'earth_engine',description: 'DEM',scale:30,region:geometry,});
+
+
+//JRC
+
+var occurrence = JRC.select('occurrence').clip(geometry);
+var p90_lote = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([90]),geometry:geometry,maxPixels:1e9,scale:30}).get('occurrence'));
+var p10_lote = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]),geometry:geometry,maxPixels:1e9,scale:30}).get('occurrence'));
+var dem_pal = ['ffffff', 'ffbbbb', '0000ff'];
+Map.addLayer(occurrence, {min:p10_lote.getInfo(), max:p90_lote.getInfo(), palette: dem_pal}, 'JRC');
+Export.image.toDrive({image:occurrence,folder:'earth_engine',description: 'JRC',scale:30,region:geometry});
+
+/*
+var PCs_campo = ee.ImageCollection(years.map(function(y) {
+  var nov_ini = ee.Date.fromYMD(2014,10,15).advance(y, 'year');
+  var nov_fin = ee.Date.fromYMD(2014,11,15).advance(y, 'year');
+  var feb_ini = ee.Date.fromYMD(2015,02,01).advance(y, 'year');
+  var feb_fin = ee.Date.fromYMD(2015,03,01).advance(y, 'year');
+  
+  var PCs_lotes = ee.ImageCollection(lotes.map(function(lote){
+    var nov_img = unfNDVI.filterDate(nov_ini,nov_fin).reduce(ee.Reducer.percentile([90])).clip(lote.geometry());
+    nov_img = ee.Image(ee.Algorithms.If(nov_img.bandNames().length().gt(0),nov_img,ee.Image(1.0).rename('NDVI_p90').clip(lote.geometry())));
+    var nov_val = ee.Number(nov_img.reduceRegion({reducer: ee.Reducer.mean(),geometry:lote.geometry(),maxPixels:1e9,scale:30}).get('NDVI_p90'));
+    nov_img = nov_img.set('fecha',nov_ini).set('valor',nov_val);
+    
+    var feb_img = unfNDVI.filterDate(feb_ini,feb_fin).reduce(ee.Reducer.percentile([90])).clip(lote.geometry());
+    feb_img = ee.Image(ee.Algorithms.If(feb_img.bandNames().length().gt(0),feb_img,ee.Image(1.0).rename('NDVI_p90').clip(lote.geometry())));
+    var feb_val = ee.Number(feb_img.reduceRegion({reducer: ee.Reducer.mean(),geometry:lote.geometry(),maxPixels:1e9,scale:30}).get('NDVI_p90'));
+    feb_img = feb_img.set('fecha',feb_ini).set('valor',feb_val);
+    
+    var out_img = ee.Algorithms.If(nov_val.gt(feb_val),nov_img,feb_img);
+    
+    return out_img;
+  }));
+
+  var mosaic = PCs_lotes.mosaic();
+
+  return mosaic;
+}));
+
+print (PCs_campo);
+var out = PCs_campo.reduce(ee.Reducer.percentile([10]));
+Map.addLayer(out, {min:0.4, max:0.8, palette: ndvi_pal}, 'PC_p10');
+
+
+var batch = require('users/fitoprincipe/geetools:batch')
+
+batch.Download.ImageCollection.toDrive(PCs_campo,'earth_engine',{name:'PC_p10',scale:10,region:geometry});
+
+*/
