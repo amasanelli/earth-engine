@@ -1,11 +1,5 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var geometry = /* color: #d63000 */ee.Geometry.Polygon(
-        [[[-60.582583901687826, -36.018808347110784],
-          [-60.58202600221273, -36.019780248008374],
-          [-60.58545922975179, -36.02335535173411],
-          [-60.576404092117514, -36.030053895766834],
-          [-60.56979512910482, -36.023980110492396],
-          [-60.58052396516439, -36.01571901108614]]]);
+var geometry = ee.FeatureCollection("users/masanellia/los_pala_ganadero");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 var regionJSON = JSON.stringify(geometry.getInfo());
@@ -24,7 +18,7 @@ function addNDVI(image) {
 }
 
 var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
-var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate('2019-01-01', '2020-12-31').filter(filtro);
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filter(filtro);
 var S2CloudMasked = S2Collection.map(MaskS2Clouds);
 var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
