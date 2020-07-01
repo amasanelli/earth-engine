@@ -87,13 +87,15 @@ function analyze(geometry) {
   var S2CloudMasked = S2Collection.map(MaskS2Clouds);
   var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
+  map.clear();
+  
   var NDVI_max= unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min:0.4, max:0.8, palette: ndvi_pal}, 'NDVI_p90');
 }
 
 
 
-map.centerObject(geometry, 6);
+map.setCenter(-59,-37, 6);
 map.setOptions("HYBRID");
 
 map.drawingTools().setShown(true);
