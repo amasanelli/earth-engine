@@ -95,7 +95,8 @@ var map = ui.Map();
 map.centerObject(geometry, 6);
 map.setOptions("HYBRID");
 
-map.drawingTools().getShown();
+map.drawingTools().setShown(true);
+map.drawingTools().setDrawModes(['polygon','rectangle']);
 
 ui.root.clear();
 //ui.root.add(panel);
