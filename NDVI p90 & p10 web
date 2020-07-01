@@ -99,4 +99,4 @@ map.drawingTools().getShown();
 
 ui.root.clear();
 //ui.root.add(panel);
-ui.root.add(mapPanel);
+ui.root.add(map);
