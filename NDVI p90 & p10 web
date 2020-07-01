@@ -64,6 +64,7 @@ var geometry = /* color: #98ff00 */ee.Geometry({
     });
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
+var map = ui.Map();
 
 var years = ee.List([2,4]);
 var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
@@ -87,19 +88,19 @@ function analyze(geometry) {
   var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
   var NDVI_max= unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
-  Map.addLayer(NDVI_max, {min:0.4, max:0.8, palette: ndvi_pal}, 'NDVI_p90');
+  map.addLayer(NDVI_max, {min:0.4, max:0.8, palette: ndvi_pal}, 'NDVI_p90');
 }
 
 
-var map = ui.Map();
+
 map.centerObject(geometry, 6);
 map.setOptions("HYBRID");
 
 map.drawingTools().setShown(true);
 map.drawingTools().setDrawModes(['polygon','rectangle']);
 
-map.drawingTools().onDraw(geometry => {
-  analyze(geometry);
+map.drawingTools().onDraw(function(draw){
+  analyze(draw);
 });
 
 ui.root.clear();
