@@ -81,7 +81,7 @@ function addNDVI(image) {
   return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
 }
 
-function analyze() {
+function analyze(geometry) {
   var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filter(filtro);
   var S2CloudMasked = S2Collection.map(MaskS2Clouds);
   var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
@@ -97,6 +97,10 @@ map.setOptions("HYBRID");
 
 map.drawingTools().setShown(true);
 map.drawingTools().setDrawModes(['polygon','rectangle']);
+
+map.drawingTools().onDraw(geometry => {
+  analyze(geometry);
+});
 
 ui.root.clear();
 //ui.root.add(panel);
