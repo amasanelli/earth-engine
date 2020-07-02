@@ -1,9 +1,9 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
     DEM = ee.Image("USGS/SRTMGL1_003"),
-    COPERNICUS = ee.ImageCollection("COPERNICUS/S2");
+    COPERNICUS = ee.ImageCollection("COPERNICUS/S2"),
+    layer_list = {};
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
-
 
 var map = ui.Map();
 
@@ -14,8 +14,6 @@ var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
 var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
-
-var layer_list = {};
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
@@ -35,7 +33,7 @@ function analyze(geometry) {
   /* NDVI P90 HISTORICO TOTAL*/
   var NDVI_max = unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90');
-  layer_list.NDVI_p90 = NDVI_max.getDownloadURL({name: 'ee_image', crs: 'EPSG:32721', scale: 10, region: geometry});
+  layer_list.NDVI_p90 = NDVI_max.getDownloadURL({name: 'NDVI_p90', crs: 'EPSG:32721', scale: 10, region: geometry});
   
   /* NDVI P90 POR CAMPAÑA*/
   var campaigns =  ee.ImageCollection(years.map(function (y){
@@ -50,37 +48,40 @@ function analyze(geometry) {
     var img = ee.Image(listOfImages.get(i));
     var campaign = (2014 + i) + "-" + (2015 + i);
     map.addLayer(img, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90_' + campaign);
-    Export.image.toDrive({image: img, folder: 'earth_engine', description: 'NDVI_p90_' + campaign, scale: 10, region: geometry});
+    layer_list['NDVI_p90_' + campaign] = img.getDownloadURL({name: 'NDVI_p90_' + campaign, crs: 'EPSG:32721', scale: 10, region: geometry});
+    //Export.image.toDrive({image: img, folder: 'earth_engine', description: 'NDVI_p90_' + campaign, scale: 10, region: geometry});
   }
   
   /* NDVI P10 HISTORICO TOTAL*/
   var NDVI_min= unfNDVI.reduce(ee.Reducer.percentile([10])).clip(geometry);
   map.addLayer(NDVI_min, {min: 0, max: 0.3, palette: ndvi_pal}, 'NDVI_p10');
-  Export.image.toDrive({image: NDVI_min, folder: 'earth_engine', description: 'NDVI_p10', scale: 10, region: geometry});
+  layer_list.NDVI_p10 = NDVI_min.getDownloadURL({name: 'NDVI_p10', crs: 'EPSG:32721', scale: 10, region: geometry});
+  //Export.image.toDrive({image: NDVI_min, folder: 'earth_engine', description: 'NDVI_p10', scale: 10, region: geometry});
 
   /* DEM */
   var elevation = DEM.select('elevation').clip(geometry);
   var p90_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var p10_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
-  Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
+  layer_list.DEM = elevation.getDownloadURL({name: 'DEM', crs: 'EPSG:32721', scale: 30, region: geometry});
+  //Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
 
   /* JRC */
   var occurrence = JRC.select('occurrence').clip(geometry);
   var p90_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
   var p10_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
   map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
-  Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
+  layer_list.JRC = occurrence.getDownloadURL({name: 'JRC', crs: 'EPSG:32721', scale: 30, region: geometry});
+  //Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
   
   select.style().set({shown: true});
   select.items().reset(Object.keys(layer_list));
 }
 
-
+/* PANEL */
 var urlLabel = ui.Label('Descargar', {shown: false});
 
 var select = ui.Select({
-  //items: Object.keys(layer_list),
   placeholder: 'Seleccione una imagen',
   onChange: function(layer_name) {
     urlLabel.setUrl(layer_list[layer_name]);
@@ -118,7 +119,7 @@ var panel = ui.Panel({
   style: {position: 'bottom-left'}
 });
 
-
+/* UI */
 ui.root.clear();
 ui.root.add(panel);
 ui.root.add(map);
