@@ -1,68 +1,3 @@
-/**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var geometry = /* color: #98ff00 */ee.Geometry({
-      "type": "GeometryCollection",
-      "geometries": [
-        {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [
-                -58.94829634987184,
-                -38.64791675984243
-              ],
-              [
-                -58.96194342933961,
-                -38.63859847884026
-              ],
-              [
-                -59.01249770485231,
-                -38.65750192830215
-              ],
-              [
-                -58.99816397987672,
-                -38.66768895294479
-              ],
-              [
-                -58.95730857216188,
-                -38.65354736386092
-              ]
-            ]
-          ],
-          "evenOdd": true
-        },
-        {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [
-                -58.10696535508748,
-                -35.835800721299336
-              ],
-              [
-                -58.13194208543416,
-                -35.840045157387316
-              ],
-              [
-                -58.118895820785724,
-                -35.87308832415519
-              ],
-              [
-                -58.10833864610311,
-                -35.878095770459716
-              ],
-              [
-                -58.09529238145467,
-                -35.86008139488497
-              ]
-            ]
-          ],
-          "geodesic": true,
-          "evenOdd": true
-        }
-      ],
-      "coordinates": []
-    });
-/***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 var map = ui.Map();
 
@@ -105,6 +40,16 @@ map.drawingTools().onDraw(function(draw){
   analyze(draw);
 });
 
+var label = ui.Label('NDVI Umbral');
+var button = ui.Button('Calcular',()=>{
+  print('peluca');
+});
+var panel = ui.Panel({
+  widgets: [label,button],
+  layout: ui.Panel.Layout.flow('vertical'),
+  style: {position: 'bottom-left'}
+});
+
 ui.root.clear();
-//ui.root.add(panel);
+ui.root.add(panel);
 ui.root.add(map);
