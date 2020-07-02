@@ -97,12 +97,15 @@ map.drawingTools().setShown(true);
 map.drawingTools().setDrawModes(['polygon','rectangle']);
 
 var label = ui.Label('Análisis de tierras');
-var btnClear = ui.Button('Limpiar',function(){
-  map.clear();
-  map.drawingTools().clear();
-  map.setOptions("HYBRID");
-  urlLabel.style().set({shown: false});
-  layer_list = {};
+var btnClear = ui.Button({
+  label:'Limpiar',
+  onClick: function(){
+    map.clear();
+    map.drawingTools().clear();
+    map.setOptions("HYBRID");
+    urlLabel.style().set({shown: false});
+    layer_list = {};
+  }
 });
 var btnAnalyze = ui.Button('Analizar',function(){
   map.drawingTools().setSelected(null);
@@ -116,7 +119,7 @@ var btnAnalyze = ui.Button('Analizar',function(){
 var panel = ui.Panel({
   widgets: [label,btnAnalyze,btnClear,select,urlLabel],
   layout: ui.Panel.Layout.flow('vertical'),
-  style: {position: 'bottom-left', whiteSpace: 'nowrap'}
+  style: {position: 'bottom-left'}
 });
 
 /* UI */
