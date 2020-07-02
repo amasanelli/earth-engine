@@ -91,7 +91,7 @@ var select = ui.Select({
 });
 
 //select.setDisabled(true);
-
+layer_list.test=1
 select.style().set({shown: true});
 select.items().add(layer_list);
 
