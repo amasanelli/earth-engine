@@ -35,17 +35,18 @@ map.setOptions("HYBRID");
 
 map.drawingTools().setShown(true);
 map.drawingTools().setDrawModes(['polygon','rectangle']);
-
+/*
 map.drawingTools().onDraw(function(draw){
   analyze(draw);
 });
-
+*/
 var label = ui.Label('NDVI Umbral');
-var button = ui.Button('Calcular',()=>{
-  print('peluca');
+var btnClear = ui.Button('Limpiar',function(){
+  map.clear();
+  print(map.layers());
 });
 var panel = ui.Panel({
-  widgets: [label,button],
+  widgets: [label,btnClear],
   layout: ui.Panel.Layout.flow('vertical'),
   style: {position: 'bottom-left'}
 });
