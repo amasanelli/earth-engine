@@ -15,7 +15,7 @@ var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
-var list = {'NDVI_p90': 'test'};
+var list = {'NDVI_p90': 'https://greeneye.herokuapp.com/'};
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
