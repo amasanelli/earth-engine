@@ -84,6 +84,7 @@ var btnClear = ui.Button('Limpiar',function(){
   map.setOptions("HYBRID");
 });
 var btnAnalyze = ui.Button('Analizar',function(){
+  map.drawingTools().setShown(false);
   if (map.drawingTools().layers().length() > 0) {
     analyze(map.drawingTools().layers().get(0).toGeometry());
   } else {
