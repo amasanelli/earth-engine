@@ -73,7 +73,7 @@ function analyze(geometry) {
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
   
   select.style().set({shown: true});
-  select.items().set(Object.keys(layer_list));
+  //select.items().set(Object.keys(layer_list));
 }
 
 
