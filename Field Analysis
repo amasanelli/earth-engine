@@ -73,14 +73,14 @@ function analyze(geometry) {
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
   
   select.style().set({shown: true});
-  //select.items(Object.keys(layer_list));
+  select.items().set(Object.keys(layer_list));
 }
 
 
 var urlLabel = ui.Label('Descargar', {shown: false});
 
 var select = ui.Select({
-  items: Object.keys(layer_list),
+  //items: Object.keys(layer_list),
   placeholder: 'Seleccione una imagen',
   onChange: function(layer_name) {
     urlLabel.setUrl(layer_list[layer_name]);
