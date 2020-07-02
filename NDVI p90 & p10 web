@@ -1,3 +1,9 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
+    DEM = ee.Image("USGS/SRTMGL1_003"),
+    COPERNICUS = ee.ImageCollection("COPERNICUS/S2");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
 
 var map = ui.Map();
 
@@ -19,7 +25,7 @@ function addNDVI(image) {
 }
 
 function analyze(geometry) {
-  var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filter(filtro);
+  var S2Collection = COPERNICUS.filterBounds(geometry).filter(filtro);
   var S2CloudMasked = S2Collection.map(MaskS2Clouds);
   var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
@@ -53,7 +59,7 @@ function analyze(geometry) {
   var p90_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var p10_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var dem_pal = ['#33E6FF', '#734F00'];
-  Map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
+  map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
   Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
 
   /* JRC */
@@ -61,10 +67,13 @@ function analyze(geometry) {
   var p90_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
   var p10_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
   var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
-  Map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
+  map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
 
 
+
+
+    
 }
 
 map.setCenter(-59,-37, 6);
