@@ -59,7 +59,7 @@ function analyze(geometry) {
   /* JRC */
   var occurrence = JRC.select('occurrence').clip(geometry);
   var p90_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
-  var p10_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]),geometry:geometry,maxPixels:1e9,scale:30}).get('occurrence'));
+  var p10_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels:1e9, scale:30}).get('occurrence'));
   var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
   Map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
