@@ -59,7 +59,6 @@ function analyze(geometry) {
   var elevation = DEM.select('elevation').clip(geometry);
   var p90_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var p10_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
-  
   map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
   Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
 
@@ -67,7 +66,6 @@ function analyze(geometry) {
   var occurrence = JRC.select('occurrence').clip(geometry);
   var p90_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
   var p10_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
-  
   map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
 
@@ -78,16 +76,11 @@ map.setOptions("HYBRID");
 
 map.drawingTools().setShown(true);
 map.drawingTools().setDrawModes(['polygon','rectangle']);
-/*
-map.drawingTools().onDraw(function(draw){
-  analyze(draw);
-});
-*/
+
 var label = ui.Label('NDVI Umbral');
 var btnClear = ui.Button('Limpiar',function(){
   map.clear();
   map.drawingTools().clear();
-  //map.setCenter(-59,-37, 6);
   map.setOptions("HYBRID");
 });
 var btnAnalyze = ui.Button('Analizar',function(){
