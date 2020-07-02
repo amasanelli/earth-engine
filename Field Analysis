@@ -1,8 +1,7 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
     DEM = ee.Image("USGS/SRTMGL1_003"),
-    COPERNICUS = ee.ImageCollection("COPERNICUS/S2"),
-    list = {};
+    COPERNICUS = ee.ImageCollection("COPERNICUS/S2");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 
@@ -15,6 +14,8 @@ var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
 var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
+
+var list = {'NDVI_p90': ''};
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
