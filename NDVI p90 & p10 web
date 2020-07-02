@@ -43,7 +43,7 @@ function analyze(geometry) {
   }));
 
   var listOfImages = campaigns.toList(campaigns.size());
-  for (var i = 0; i < campaigns.size().getInfo(); i++){
+  for (var i = 0; i < campaigns.size().getInfo(); i ++){
     var img = ee.Image(listOfImages.get(i));
     var campaign = (2014 + i) + "-" + (2015 + i);
     map.addLayer(img, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90_' + campaign);
