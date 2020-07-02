@@ -85,7 +85,7 @@ function analyze(geometry) {
 }
 
 function downloadImg() {
- var url = places[select.getValue()];
+ var url = list[select.getValue()];
  urlLabel.setUrl(url);
  urlLabel.style().set({shown: true});
 }
