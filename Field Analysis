@@ -72,7 +72,7 @@ function analyze(geometry) {
   map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
   
-  select.setDisabled(false);
+  select.style().set({shown: true});
   //select.items(Object.keys(layer_list));
 }
 
@@ -85,10 +85,11 @@ var select = ui.Select({
   onChange: function(layer_name) {
     urlLabel.setUrl(layer_list[layer_name]);
     urlLabel.style().set({shown: true});
-  }
+  },
+  style: {shown: false}
 });
 
-select.setDisabled(true);
+//select.setDisabled(true);
 
 map.setCenter(-59,-37, 6);
 map.setOptions("HYBRID");
