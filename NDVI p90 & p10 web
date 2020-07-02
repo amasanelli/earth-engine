@@ -54,7 +54,7 @@ function analyze(geometry) {
   var p10_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var dem_pal = ['#33E6FF', '#734F00'];
   Map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
-  Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry,});
+  Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
 
   /* JRC */
   var occurrence = JRC.select('occurrence').clip(geometry);
