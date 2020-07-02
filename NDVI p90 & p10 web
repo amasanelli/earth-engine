@@ -31,7 +31,7 @@ function analyze(geometry) {
   var unfNDVI = s2CloudMasked.map(addNDVI).select(['NDVI']);
 
   /* NDVI P90 HISTORICO TOTAL*/
-  var NDVI_max= unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
+  var NDVI_max = unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90');
   
   /* NDVI P90 POR CAMPAÑA*/
