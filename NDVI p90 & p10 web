@@ -26,9 +26,9 @@ function addNDVI(image) {
 }
 
 function analyze(geometry) {
-  var S2Collection = COPERNICUS.filterBounds(geometry).filter(filtro);
-  var S2CloudMasked = S2Collection.map(maskS2Clouds);
-  var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
+  var s2Collection = COPERNICUS.filterBounds(geometry).filter(filtro);
+  var s2CloudMasked = s2Collection.map(maskS2Clouds);
+  var unfNDVI = s2CloudMasked.map(addNDVI).select(['NDVI']);
 
   /* NDVI P90 HISTORICO TOTAL*/
   var NDVI_max= unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
