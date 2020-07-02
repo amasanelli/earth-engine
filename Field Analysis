@@ -74,7 +74,7 @@ function analyze(geometry) {
   
   select.style().set({shown: true});
   print(Object.keys(layer_list));
-  select.items(Object.keys(layer_list).getInfo());
+  select.items(Object.keys(layer_list));
 }
 
 
