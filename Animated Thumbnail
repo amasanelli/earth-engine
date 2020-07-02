@@ -1,6 +1,6 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var geometry = 
-    /* color: #d63000 */
+    /* color: #98ff00 */
     /* shown: false */
     /* displayProperties: [
       {
@@ -8,10 +8,10 @@ var geometry =
       }
     ] */
     ee.Geometry.Polygon(
-        [[[-59.343484580998364, -38.34175626073307],
-          [-59.343484580998364, -38.3928334428078],
-          [-59.264348686222974, -38.3928334428078],
-          [-59.264348686222974, -38.34175626073307]]], null, false);
+        [[[-59.31816452789794, -38.35786805287858],
+          [-59.31816452789794, -38.37657618437273],
+          [-59.29344528961669, -38.37657618437273],
+          [-59.29344528961669, -38.35786805287858]]], null, false);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 // Simple ImageCollection preview via animated GIF.
 
@@ -21,7 +21,7 @@ Map.centerObject(geometry, 13);
 var collection = ee.ImageCollection('COPERNICUS/S2')
   //.filterDate('2000-01-01', '2019-12-31')
   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
-  //.filterBounds(geometry)
+  .filterBounds(geometry)
   .select(['B4', 'B3', 'B2']);
 
 // Add the first image to the map, just as a preview.
