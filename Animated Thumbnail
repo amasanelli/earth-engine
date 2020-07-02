@@ -1,0 +1,61 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var geometry = 
+    /* color: #d63000 */
+    /* shown: false */
+    /* displayProperties: [
+      {
+        "type": "rectangle"
+      }
+    ] */
+    ee.Geometry.Polygon(
+        [[[-59.343484580998364, -38.34175626073307],
+          [-59.343484580998364, -38.3928334428078],
+          [-59.264348686222974, -38.3928334428078],
+          [-59.264348686222974, -38.34175626073307]]], null, false);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+// Simple ImageCollection preview via animated GIF.
+
+Map.addLayer(geometry);
+Map.centerObject(geometry, 13);
+
+var maskL8 = function(image) {
+  var qa = image.select('BQA');
+  /// Check that the cloud bit is off.
+  // See https://www.usgs.gov/land-resources/nli/landsat/landsat-collection-1-level-1-quality-assessment-band
+  var mask = qa.bitwiseAnd(1 << 4).eq(0);
+  return image.updateMask(mask);
+}
+
+// Select MODIS vegetation composites from 2018.
+var collection = ee.ImageCollection('LANDSAT/LC08/C01/T1').filterBounds(geometry).select(['B4', 'B3', 'B2']);
+
+// Add the first image to the map, just as a preview.
+var im = ee.Image(collection.first());
+var trueColor432Vis = {
+  min: 0.0,
+  max: 30000.0,
+  gamma: 1.4,
+};
+Map.addLayer(im, trueColor432Vis, "first image");
+
+// Visualization parameters.
+var args = {
+  crs: 'EPSG:3857',  // Maps Mercator
+  dimensions: '300',
+  region: geometry,
+  min: 0.0,
+  max: 30000.0,
+  gamma: 1.4,
+  framesPerSecond: 5,
+};
+
+// Create a video thumbnail and add it to the map.
+var thumb = ui.Thumbnail({
+  // Specifying a collection for "image" animates the sequence of images.
+  image: collection,
+  params: args,
+  style: {
+    position: 'bottom-right',
+    width: '320px'
+  }});
+Map.add(thumb);
