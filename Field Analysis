@@ -15,7 +15,7 @@ var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
-var layers = ee.List(null);
+var layers = ee.List();
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
@@ -71,7 +71,8 @@ function analyze(geometry) {
   var p10_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
   map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
-
+  
+  select.items(layers);
 }
 
 function downloadImg() {
@@ -88,6 +89,8 @@ function downloadImg() {
 }
 var downloadButton = ui.Button('Download viewport', downloadImg);
 var urlLabel = ui.Label('Download', {shown: false});
+
+var select = ui.Select();
 
 
 map.setCenter(-59,-37, 6);
@@ -112,7 +115,7 @@ var btnAnalyze = ui.Button('Analizar',function(){
   }
 });
 var panel = ui.Panel({
-  widgets: [label,btnAnalyze,btnClear,downloadButton,urlLabel],
+  widgets: [label,btnAnalyze,btnClear,selects],
   layout: ui.Panel.Layout.flow('vertical'),
   style: {position: 'bottom-left'}
 });
