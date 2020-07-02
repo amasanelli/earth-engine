@@ -43,7 +43,9 @@ map.drawingTools().onDraw(function(draw){
 var label = ui.Label('NDVI Umbral');
 var btnClear = ui.Button('Limpiar',function(){
   map.clear();
-  print(map.layers());
+  map.drawingTools().clear();
+  map.setCenter(-59,-37, 6);
+  map.setOptions("HYBRID");
 });
 var panel = ui.Panel({
   widgets: [label,btnClear],
