@@ -93,7 +93,7 @@ var select = ui.Select({
 //select.setDisabled(true);
 
 select.style().set({shown: true});
-select.items().add(['mansa']);
+select.items().add('mansa');
 
 map.setCenter(-59,-37, 6);
 map.setOptions("HYBRID");
