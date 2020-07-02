@@ -15,7 +15,7 @@ var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
-function MaskS2Clouds(image) {
+function maskS2Clouds(image) {
   var qa = image.select('QA60');
   var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(qa.bitwiseAnd(cirrusBitMask).eq(0));
   return image.updateMask(mask);
@@ -27,7 +27,7 @@ function addNDVI(image) {
 
 function analyze(geometry) {
   var S2Collection = COPERNICUS.filterBounds(geometry).filter(filtro);
-  var S2CloudMasked = S2Collection.map(MaskS2Clouds);
+  var S2CloudMasked = S2Collection.map(maskS2Clouds);
   var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
   /* NDVI P90 HISTORICO TOTAL*/
