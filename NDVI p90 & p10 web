@@ -70,10 +70,6 @@ function analyze(geometry) {
   map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
 
-
-
-
-    
 }
 
 map.setCenter(-59,-37, 6);
