@@ -22,11 +22,31 @@ function analyze(geometry) {
   var S2CloudMasked = S2Collection.map(MaskS2Clouds);
   var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
 
+  /* NDVI P90 HISTORICO TOTAL*/
   var NDVI_max= unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min:0.4, max:0.8, palette: ndvi_pal}, 'NDVI_p90');
+  
+  /* NDVI P90 POR CAMPAÑA*/
+  var campaigns =  ee.ImageCollection(years.map(function (y){
+  var date_ini = ee.Date.fromYMD(2014,05,15).advance(y, 'year');
+  var date_fin = ee.Date.fromYMD(2015,05,15).advance(y, 'year');
+  var NDVI_p90 = unfNDVI.filterDate(date_ini,date_fin).reduce(ee.Reducer.percentile([90])).clip(geometry);
+  return NDVI_p90;
+}));
+
+var listOfImages = campaigns.toList(campaigns.size());
+for (var i=0; i < campaigns.size().getInfo(); i++){
+  var img = ee.Image(listOfImages.get(i));
+  var campaign = (2014 + i) + "-" + (2015 + i);
+  Map.addLayer(img, {min:0.4, max:0.8, palette: ndvi_pal}, 'NDVI_p90_'+campaign);
+  Export.image.toDrive({image:img,folder:'earth_engine',description:'NDVI_p90_'+campaign,scale:10,region:geometry});
 }
 
+var NDVI_min= unfNDVI.reduce(ee.Reducer.percentile([10])).clip(geometry);
+Map.addLayer(NDVI_min, {min:0, max:0.3, palette: ndvi_pal}, 'NDVI_p10');
+Export.image.toDrive({image:NDVI_min,folder:'earth_engine',description:'NDVI_p10',scale:10,region:geometry});
 
+}
 
 map.setCenter(-59,-37, 6);
 map.setOptions("HYBRID");
