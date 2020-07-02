@@ -1,0 +1,301 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var dataset = ee.Image("USGS/SRTMGL1_003"),
+    geometry = /* color: #0b4a8b */ee.Geometry.Polygon(
+        [[[-59.20372629484325, -35.648098452149064],
+          [-59.180637839643055, -35.66623062159079],
+          [-59.159437659589344, -35.64893541212385],
+          [-59.14003992399364, -35.665742501726704],
+          [-59.14149904569774, -35.64726148340565],
+          [-59.146391394940906, -35.63756595644546],
+          [-59.13437509855419, -35.6275204289179],
+          [-59.14484644254833, -35.61935750827248],
+          [-59.167677405683094, -35.639449352306826],
+          [-59.179865363446766, -35.629822640480576]]]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+//Pre-zones
+//Definir rangos
+//Reclassify
+//Zones
+
+
+//SENTINEL
+
+var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
+var filtro = ee.Filter.or(ee.Filter.calendarRange(10,11,'month'),ee.Filter.calendarRange(01,02,'month'));
+var S2Collection = ee.ImageCollection('COPERNICUS/S2')
+    .filterBounds(geometry)
+    .filter(filtro);
+
+var cloudBitMask = ee.Number(2).pow(10).int();
+var cirrusBitMask = ee.Number(2).pow(11).int();
+
+function MaskS2Clouds(image) {
+  var qa = image.select('QA60');
+  var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(
+             qa.bitwiseAnd(cirrusBitMask).eq(0));
+  return image.updateMask(mask);
+}
+
+var S2CloudMasked = S2Collection.map(MaskS2Clouds);
+
+function addNDVI(image) {
+  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+}
+
+var unfNDVI = S2CloudMasked.map(addNDVI).select(['NDVI']);
+
+function filterNDVI(image){
+  var maskg = image.gt(0.2);
+  return image.updateMask(maskg);
+}
+
+var fNDVI = unfNDVI.map(filterNDVI);
+
+var NDVI= fNDVI.median().clip(geometry);
+
+var p90_lote = ee.Number(NDVI.reduceRegion({
+        reducer: ee.Reducer.percentile([90]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('NDVI'));
+        
+var p10_lote = ee.Number(NDVI.reduceRegion({
+        reducer: ee.Reducer.percentile([10]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('NDVI'));
+
+var lote_p90 = p90_lote.getInfo();
+var lote_p10 = p10_lote.getInfo();
+
+print(p90_lote);
+print(p10_lote);
+
+Map.addLayer(NDVI, {min:lote_p10, max:lote_p90, palette: ndvi_pal}, 'NDVI_sentinel');
+
+var regionJSON = JSON.stringify(geometry.getInfo());
+Export.image.toDrive({
+  image: NDVI,
+  folder: "earth_engine",
+  description: 'NDVI_sentinel', 
+  scale: 10,
+  'region':regionJSON,
+});
+
+
+
+
+//WATER
+
+var S2Collection2 = ee.ImageCollection('COPERNICUS/S2')
+    .filterBounds(geometry)
+    .filter(ee.Filter.calendarRange(4,10,'month'));
+
+var S2CloudMasked2 = S2Collection2.map(MaskS2Clouds);
+
+var unfNDVIw = S2CloudMasked2.map(addNDVI).select(['NDVI']);
+
+function filterWater(image){
+  var maskg = image.lt(0);
+  return image.updateMask(maskg);
+}
+
+var fNDVIw = unfNDVIw.map(filterWater);
+
+var NDVIw = fNDVIw.mean().clip(geometry);
+
+var p90_lote = ee.Number(NDVIw.reduceRegion({
+        reducer: ee.Reducer.percentile([90]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('NDVI'));
+        
+var p10_lote = ee.Number(NDVIw.reduceRegion({
+        reducer: ee.Reducer.percentile([10]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('NDVI'));
+
+var lote_p90 = p90_lote.getInfo();
+var lote_p10 = p10_lote.getInfo();
+
+print(p90_lote);
+print(p10_lote);
+
+var w_pal = ['#33E6FF','#357100'];
+
+Map.addLayer(NDVIw, {min:lote_p10, max:lote_p90, palette: w_pal}, 'NDVI_sentinel_water');
+
+var regionJSON = JSON.stringify(geometry.getInfo());
+Export.image.toDrive({
+  image: NDVIw,
+  folder: "earth_engine",
+  description: 'NDVI_sentinel_water', 
+  scale: 10,
+  'region':regionJSON,
+});
+
+
+
+
+//LANDSAT
+
+var maskL8 = function(image) {
+  var qa = image.select('pixel_qa');
+  var cloudShadowBitMask = 1 << 3;
+  var cloudsBitMask = 1 << 5;
+  var mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0)
+              .and(qa.bitwiseAnd(cloudsBitMask).eq(0));
+  return image.updateMask(mask);
+};
+
+var landsat = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
+    .filterBounds(geometry)
+    .filter(ee.Filter.calendarRange(10,02,'month'))
+    .map(maskL8);
+
+function addNDVIl(image) {
+  return image.addBands(image.normalizedDifference(['B5', 'B4']).rename('NDVI'));
+}
+
+var unfNDVIl = landsat.map(addNDVIl).select(['NDVI']);
+
+function filterNDVIl(image){
+  var maskg = image.gt(0.2);
+  return image.updateMask(maskg);
+}
+
+var fNDVIl = unfNDVIl.map(filterNDVIl);
+
+var NDVIl = fNDVIl.median().clip(geometry);
+
+var p90_lote = ee.Number(NDVIl.reduceRegion({
+                  reducer: ee.Reducer.percentile([90]),
+                  geometry: geometry,
+                  maxPixels: 1e9,
+                  scale: 30,
+                  }).get('NDVI'));
+        
+var p10_lote = ee.Number(NDVIl.reduceRegion({
+                  reducer: ee.Reducer.percentile([10]),
+                  geometry: geometry,
+                  maxPixels: 1e9,
+                  scale: 30,
+                  }).get('NDVI'));
+
+var lote_p90 = p90_lote.getInfo();
+var lote_p10 = p10_lote.getInfo();
+
+print(p90_lote);
+print(p10_lote);
+
+Map.addLayer(NDVIl, {min:lote_p10, max:lote_p90, palette: ndvi_pal}, 'NDVI_landsat');
+
+var regionJSON = JSON.stringify(geometry.getInfo());
+Export.image.toDrive({
+  image: NDVIl,
+  folder: "earth_engine",
+  description: 'NDVI_landsat', 
+  scale: 30,
+  'region':regionJSON,
+});
+
+
+
+
+//DEM
+
+var elevation = dataset.select('elevation').clip(geometry);
+
+var p90_lote = ee.Number(elevation.reduceRegion({
+        reducer: ee.Reducer.percentile([98]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('elevation'));
+        
+var p10_lote = ee.Number(elevation.reduceRegion({
+        reducer: ee.Reducer.percentile([2]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('elevation'));
+
+var lote_p90 = p90_lote.getInfo();
+var lote_p10 = p10_lote.getInfo();
+
+print(p90_lote);
+print(p10_lote);
+
+var dem_pal = ['#33E6FF','#734F00'];
+
+Map.addLayer(elevation, {min:lote_p10, max:lote_p90, palette: dem_pal}, 'DEM');
+
+Export.image.toDrive({
+  image: elevation,
+  folder: "earth_engine",
+  description: 'DEM', 
+  scale: 30,
+  'region':regionJSON,
+});
+
+
+
+
+//MODIS
+
+var modiscoll = ee.ImageCollection('MODIS/006/MYD13Q1')
+                .filter(ee.Filter.calendarRange(10,02,'month'))
+                .select('NDVI');
+                
+function filterNDVIm(image){
+  var maskg = image.gt(2000);
+  return image.updateMask(maskg);
+}
+
+var filtrada = modiscoll.map(filterNDVIm);
+
+var NDVI = function(image) {
+  return image.expression('float(b("NDVI")/10000)');
+};
+
+var modisNDVI = filtrada.map(NDVI);
+
+var clipped = modisNDVI.median().clip(geometry);
+
+var p90_lote = ee.Number(clipped.reduceRegion({
+        reducer: ee.Reducer.percentile([90]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('NDVI'));
+        
+var p10_lote = ee.Number(clipped.reduceRegion({
+        reducer: ee.Reducer.percentile([10]),
+        geometry: geometry,
+        maxPixels: 1e9,
+        scale: 30,
+        }).get('NDVI'));
+
+var lote_p90 = p90_lote.getInfo();
+var lote_p10 = p10_lote.getInfo();
+
+print(p90_lote);
+print(p10_lote);
+
+var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
+
+Map.addLayer(clipped, {min:lote_p10, max:lote_p90, palette: ndvi_pal}, 'NDVI_modis');
+
+var regionJSON = JSON.stringify(geometry.getInfo());
+Export.image.toDrive({
+  image: clipped,
+  folder: "earth_engine",
+  description: 'NDVI_MODIS', 
+  scale: 250,
+  'region':regionJSON,
+});
