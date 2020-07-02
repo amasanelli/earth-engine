@@ -27,7 +27,7 @@ var maskL8 = function(image) {
 }
 
 // Select MODIS vegetation composites from 2018.
-var collection = ee.ImageCollection('LANDSAT/LC08/C01/T1').filterDate('2014-01-01', '2019-12-31').filter(ee.Filter.lt('CLOUD_COVER', 5)).filterBounds(geometry).select(['B4', 'B3', 'B2']);
+var collection = ee.ImageCollection('LANDSAT/LC08/C01/T1').filterDate('2000-01-01', '2019-12-31').filter(ee.Filter.lt('CLOUD_COVER', 5)).filterBounds(geometry).select(['B4', 'B3', 'B2']);
 
 // Add the first image to the map, just as a preview.
 var im = ee.Image(collection.first());
@@ -59,8 +59,15 @@ var thumb = ui.Thumbnail({
     width: '320px'
   }});
 Map.add(thumb);
+
+var convertBit = function (image) {
+    return image.multiply(512).uint8();
+};
+
+var outputVideo = collection.map(convertBit);
+
 Export.video.toDrive({
-  collection: collection, 
+  collection: outputVideo, 
   folder: "earth_engine",
   description: 'NDVI_p10',
   scale: 30,
