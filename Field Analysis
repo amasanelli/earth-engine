@@ -15,7 +15,7 @@ var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
-var list = {'NDVI_p90': 'https://greeneye.herokuapp.com/'};
+var layer_list = {};
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
@@ -44,7 +44,7 @@ function analyze(geometry) {
   var NDVI_max = unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90');
   var url = NDVI_max.getDownloadURL(downloadArgs);
-  list.NDVI_p90 = url;
+  layer_list.NDVI_p90 = url;
   
   /* NDVI P90 POR CAMPAÑA*/
   var campaigns =  ee.ImageCollection(years.map(function (y){
@@ -82,17 +82,17 @@ function analyze(geometry) {
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
   
   select.setDisabled(false);
-  select.items(Object.keys(list));
+  select.items(Object.keys(layer_list));
 }
 
 
 var urlLabel = ui.Label('Descargar', {shown: false});
 
 var select = ui.Select({
-  items: Object.keys(list),
+  items: Object.keys(layer_list),
   placeholder: 'Seleccione una imagen',
-  onChange: function(url) {
-    urlLabel.setUrl(url);
+  onChange: function(layer_name) {
+    urlLabel.setUrl(layer_list[layer_name]);
     urlLabel.style().set({shown: true});
   }
 });
