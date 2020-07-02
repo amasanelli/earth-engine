@@ -18,9 +18,9 @@ var geometry =
 Map.centerObject(geometry, 13);
 
 // Select MODIS vegetation composites from 2018.
-var collection = ee.ImageCollection('LANDSAT/LT05/C01/T1_TOA')
+var collection = ee.ImageCollection('COPERNICUS/S2')
   //.filterDate('2000-01-01', '2019-12-31')
-  .filter(ee.Filter.lt('CLOUD_COVER', 5))
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
   .filterBounds(geometry)
   .select(['B4', 'B3', 'B2'])
   .map(function(image) {
@@ -28,13 +28,8 @@ var collection = ee.ImageCollection('LANDSAT/LT05/C01/T1_TOA')
   });
 
 // Add the first image to the map, just as a preview.
-var im = ee.Image(collection.first());
-var trueColor432Vis = {
-  min: 0.0,
-  max: 30000.0,
-  gamma: 1.4,
-};
-Map.addLayer(im, trueColor432Vis, "first image");
+var img = ee.Image(collection.first());
+Map.addLayer(img, {}, "first image");
 
 // Create a video thumbnail and add it to the map.
 var thumb = ui.Thumbnail({
@@ -44,8 +39,6 @@ var thumb = ui.Thumbnail({
     crs: 'EPSG:3857',  // Maps Mercator
     dimensions: '300',
     region: geometry,
-    min: 0.0,
-    max: 30000.0,
     gamma: 1.4,
     framesPerSecond: 10,
   },
