@@ -120,7 +120,7 @@ var btnAnalyze = ui.Button('Analizar',function(){
   }
 });
 var panel = ui.Panel({
-  widgets: [label,btnAnalyze,btnClear,select],
+  widgets: [label,btnAnalyze,btnClear,select,downloadButton],
   layout: ui.Panel.Layout.flow('vertical'),
   style: {position: 'bottom-left'}
 });
