@@ -13,6 +13,7 @@ function MaskS2Clouds(image) {
              qa.bitwiseAnd(cirrusBitMask).eq(0));
   return image.updateMask(mask);
 }
+
 function addNDVI(image) {
   return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
 }
@@ -28,11 +29,11 @@ function analyze(geometry) {
   
   /* NDVI P90 POR CAMPAÑA*/
   var campaigns =  ee.ImageCollection(years.map(function (y){
-  var date_ini = ee.Date.fromYMD(2014,05,15).advance(y, 'year');
-  var date_fin = ee.Date.fromYMD(2015,05,15).advance(y, 'year');
-  var NDVI_p90 = unfNDVI.filterDate(date_ini,date_fin).reduce(ee.Reducer.percentile([90])).clip(geometry);
-  return NDVI_p90;
-}));
+    var date_ini = ee.Date.fromYMD(2014,05,15).advance(y, 'year');
+    var date_fin = ee.Date.fromYMD(2015,05,15).advance(y, 'year');
+    var NDVI_p90 = unfNDVI.filterDate(date_ini,date_fin).reduce(ee.Reducer.percentile([90])).clip(geometry);
+    return NDVI_p90;
+  }));
 
 var listOfImages = campaigns.toList(campaigns.size());
 for (var i=0; i < campaigns.size().getInfo(); i++){
