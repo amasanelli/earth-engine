@@ -81,7 +81,7 @@ function downloadImg() {
     scale: 30,
     region: map.drawingTools().layers().get(0).toGeometry()
  };
- var url = img.getDownloadURL(downloadArgs);
+ var url = NDVI_max.getDownloadURL(downloadArgs);
  urlLabel.setUrl(url);
  urlLabel.style().set({shown: true});
 }
