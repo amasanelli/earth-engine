@@ -15,6 +15,8 @@ var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
+var NDVI_max = ee.Image();
+
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
   var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(qa.bitwiseAnd(cirrusBitMask).eq(0));
@@ -71,6 +73,22 @@ function analyze(geometry) {
 
 }
 
+function downloadImg() {
+  //var viewBounds = ee.Geometry.Rectangle(Map.getBounds());
+  var downloadArgs = {
+    name: 'ee_image',
+    crs: 'EPSG:5070',
+    scale: 30,
+    region: map.drawingTools().layers().get(0).toGeometry()
+ };
+ var url = img.getDownloadURL(downloadArgs);
+ urlLabel.setUrl(url);
+ urlLabel.style().set({shown: true});
+}
+var downloadButton = ui.Button('Download viewport', downloadImg);
+var urlLabel = ui.Label('Download', {shown: false});
+
+
 map.setCenter(-59,-37, 6);
 map.setOptions("HYBRID");
 
@@ -93,10 +111,11 @@ var btnAnalyze = ui.Button('Analizar',function(){
   }
 });
 var panel = ui.Panel({
-  widgets: [label,btnAnalyze,btnClear],
+  widgets: [label,btnAnalyze,btnClear,downloadButton,urlLabel],
   layout: ui.Panel.Layout.flow('vertical'),
   style: {position: 'bottom-left'}
 });
+
 
 ui.root.clear();
 ui.root.add(panel);
