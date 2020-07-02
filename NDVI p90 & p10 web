@@ -31,7 +31,7 @@ function analyze(geometry) {
   var campaigns =  ee.ImageCollection(years.map(function (y){
     var date_ini = ee.Date.fromYMD(2014,05,15).advance(y, 'year');
     var date_end = ee.Date.fromYMD(2015,05,15).advance(y, 'year');
-    var NDVI_p90 = unfNDVI.filterDate(date_ini,date_end).reduce(ee.Reducer.percentile([90])).clip(geometry);
+    var NDVI_p90 = unfNDVI.filterDate(date_ini, date_end).reduce(ee.Reducer.percentile([90])).clip(geometry);
     return NDVI_p90;
   }));
 
