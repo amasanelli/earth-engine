@@ -84,18 +84,16 @@ function analyze(geometry) {
   select.items(Object.keys(list));
 }
 
-function downloadImg() {
- var url = list[select.getValue()];
- print(url);
- urlLabel.setUrl(url);
- urlLabel.style().set({shown: true});
-}
-var downloadButton = ui.Button('Download viewport', downloadImg);
-var urlLabel = ui.Label('Download', {shown: false});
+
+var urlLabel = ui.Label('Descargar', {shown: false});
 
 var select = ui.Select({
   items: Object.keys(list),
-  placeholder: 'Seleccione una imagen'
+  placeholder: 'Seleccione una imagen',
+  onChange: function(url) {
+    urlLabel.setUrl(url);
+    urlLabel.style().set({shown: true});
+  }
 });
 
 
