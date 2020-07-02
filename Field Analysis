@@ -102,6 +102,7 @@ var btnClear = ui.Button('Limpiar',function(){
   map.drawingTools().clear();
   map.setOptions("HYBRID");
   urlLabel.style().set({shown: false});
+  layer_list = {};
 });
 var btnAnalyze = ui.Button('Analizar',function(){
   map.drawingTools().setSelected(null);
