@@ -48,8 +48,11 @@ var btnClear = ui.Button('Limpiar',function(){
   map.setOptions("HYBRID");
 });
 var btnAnalyze = ui.Button('Analizar',function(){
-  print(map.drawingTools().layers().length());
-  print(map.drawingTools().layers().get(0).toGeometry());
+  if (map.drawingTools().layers().length() > 0) {
+    analyze(map.drawingTools().layers().get(0).toGeometry());
+  } else {
+    print('Dibuje un poligono para analizar');
+  }
 });
 var panel = ui.Panel({
   widgets: [label,btnAnalyze,btnClear],
