@@ -85,8 +85,8 @@ var btnClear = ui.Button('Limpiar',function(){
 });
 var btnAnalyze = ui.Button('Analizar',function(){
   map.drawingTools().setSelected(null);
-  map.drawingTools().layers().get(0).setShown(false);
   if (map.drawingTools().layers().length() > 0) {
+    map.drawingTools().layers().get(0).setShown(false);
     analyze(map.drawingTools().layers().get(0).toGeometry());
   } else {
     print('Dibuje un poligono para analizar');
