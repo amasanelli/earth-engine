@@ -21,15 +21,12 @@ Map.centerObject(geometry, 13);
 var collection = ee.ImageCollection('COPERNICUS/S2')
   //.filterDate('2000-01-01', '2019-12-31')
   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
-  .filterBounds(geometry)
-  .select(['B4', 'B3', 'B2'])
-  .map(function(image) {
-    return image.multiply(512).uint8();
-  });
+  //.filterBounds(geometry)
+  .select(['B4', 'B3', 'B2']);
 
 // Add the first image to the map, just as a preview.
 var img = ee.Image(collection.first());
-Map.addLayer(img, {}, "first image");
+Map.addLayer(img, {min: 0, max: 3000}, "first image");
 
 // Create a video thumbnail and add it to the map.
 var thumb = ui.Thumbnail({
@@ -39,6 +36,8 @@ var thumb = ui.Thumbnail({
     crs: 'EPSG:3857',  // Maps Mercator
     dimensions: '300',
     region: geometry,
+    min: 0, 
+    max: 3000,
     gamma: 1.4,
     framesPerSecond: 10,
   },
