@@ -35,7 +35,7 @@ function analyze(geometry) {
   /* NDVI P90 HISTORICO TOTAL*/
   var NDVI_max = unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90');
-  list.add(NDVI_max);
+  ee.List(list).add(NDVI_max);
   
   /* NDVI P90 POR CAMPAÑA*/
   var campaigns =  ee.ImageCollection(years.map(function (y){
