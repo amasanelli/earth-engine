@@ -89,11 +89,6 @@ var select = ui.Select({
   style: {shown: false}
 });
 
-//select.setDisabled(true);
-layer_list.test="1";
-select.style().set({shown: true});
-select.items().reset(Object.keys(layer_list));
-
 map.setCenter(-59,-37, 6);
 map.setOptions("HYBRID");
 
