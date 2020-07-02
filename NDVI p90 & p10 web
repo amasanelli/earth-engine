@@ -77,7 +77,7 @@ map.setOptions("HYBRID");
 map.drawingTools().setShown(true);
 map.drawingTools().setDrawModes(['polygon','rectangle']);
 
-var label = ui.Label('NDVI Histórico');
+var label = ui.Label('Análisi de tierras');
 var btnClear = ui.Button('Limpiar',function(){
   map.clear();
   map.drawingTools().clear();
