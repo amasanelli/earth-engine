@@ -47,8 +47,12 @@ var btnClear = ui.Button('Limpiar',function(){
   map.setCenter(-59,-37, 6);
   map.setOptions("HYBRID");
 });
+var btnAnalyze = ui.Button('Analizar',function(){
+  print(map.drawingTools().layers().length());
+  print(map.drawingTools().layers().get(0).toGeometry());
+});
 var panel = ui.Panel({
-  widgets: [label,btnClear],
+  widgets: [label,btnAnalyze,btnClear],
   layout: ui.Panel.Layout.flow('vertical'),
   style: {position: 'bottom-left'}
 });
