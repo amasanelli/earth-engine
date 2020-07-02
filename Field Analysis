@@ -15,7 +15,7 @@ var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
-var list = ee.List;
+var list = [];
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
@@ -35,7 +35,7 @@ function analyze(geometry) {
   /* NDVI P90 HISTORICO TOTAL*/
   var NDVI_max = unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90');
-  ee.List(list).add('test');
+  list.push('test');
   
   /* NDVI P90 POR CAMPAÑA*/
   var campaigns =  ee.ImageCollection(years.map(function (y){
