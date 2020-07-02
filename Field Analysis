@@ -85,14 +85,7 @@ function analyze(geometry) {
 }
 
 function downloadImg() {
-  //var viewBounds = ee.Geometry.Rectangle(Map.getBounds());
-  var downloadArgs = {
-    name: 'ee_image',
-    crs: 'EPSG:5070',
-    scale: 30,
-    region: map.drawingTools().layers().get(0).toGeometry()
- };
- var url = NDVI_max.getDownloadURL(downloadArgs);
+ var url = places[select.getValue()];
  urlLabel.setUrl(url);
  urlLabel.style().set({shown: true});
 }
