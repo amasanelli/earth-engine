@@ -8,15 +8,16 @@ var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
 var map = ui.Map();
 
 var years = ee.List.sequence(1, 5);
-var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
+var ndvi_pal = ['#FF0000', '#FBFF00', '#357100'];
+var dem_pal = ['#33E6FF', '#734F00'];
+var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
 var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
 function MaskS2Clouds(image) {
   var qa = image.select('QA60');
-  var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(
-             qa.bitwiseAnd(cirrusBitMask).eq(0));
+  var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(qa.bitwiseAnd(cirrusBitMask).eq(0));
   return image.updateMask(mask);
 }
 
@@ -58,7 +59,7 @@ function analyze(geometry) {
   var elevation = DEM.select('elevation').clip(geometry);
   var p90_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var p10_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
-  var dem_pal = ['#33E6FF', '#734F00'];
+  
   map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
   Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
 
@@ -66,7 +67,7 @@ function analyze(geometry) {
   var occurrence = JRC.select('occurrence').clip(geometry);
   var p90_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
   var p10_jrc = ee.Number(occurrence.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('occurrence'));
-  var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
+  
   map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
 
