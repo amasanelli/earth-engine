@@ -15,7 +15,7 @@ var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
 
-var layers = ee.List(null);
+var layers = ee.List;
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
@@ -115,7 +115,7 @@ var btnAnalyze = ui.Button('Analizar',function(){
   }
 });
 var panel = ui.Panel({
-  widgets: [label,btnAnalyze,btnClear,selects],
+  widgets: [label,btnAnalyze,btnClear,select],
   layout: ui.Panel.Layout.flow('vertical'),
   style: {position: 'bottom-left'}
 });
