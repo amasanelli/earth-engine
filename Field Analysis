@@ -1,7 +1,8 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
     DEM = ee.Image("USGS/SRTMGL1_003"),
-    COPERNICUS = ee.ImageCollection("COPERNICUS/S2");
+    COPERNICUS = ee.ImageCollection("COPERNICUS/S2"),
+    list = {};
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 
@@ -14,8 +15,6 @@ var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
 var filtro = ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5);
 var cloudBitMask = ee.Number(2).pow(10).int();
 var cirrusBitMask = ee.Number(2).pow(11).int();
-
-var list = [];
 
 function maskS2Clouds(image) {
   var qa = image.select('QA60');
@@ -31,11 +30,20 @@ function analyze(geometry) {
   var s2Collection = COPERNICUS.filterBounds(geometry).filter(filtro);
   var s2CloudMasked = s2Collection.map(maskS2Clouds);
   var unfNDVI = s2CloudMasked.map(addNDVI).select(['NDVI']);
+  
+  var downloadArgs = {
+    name: 'ee_image',
+    crs: 'EPSG:5070',
+    scale: 10,
+    region: geometry
+  };
+  
 
   /* NDVI P90 HISTORICO TOTAL*/
   var NDVI_max = unfNDVI.reduce(ee.Reducer.percentile([90])).clip(geometry);
   map.addLayer(NDVI_max, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90');
-  list.push('test');
+  var url = NDVI_max.getDownloadURL(downloadArgs);
+  list.NDVI_p90 = url;
   
   /* NDVI P90 POR CAMPAÑA*/
   var campaigns =  ee.ImageCollection(years.map(function (y){
@@ -72,7 +80,7 @@ function analyze(geometry) {
   map.addLayer(occurrence, {min: p10_jrc.getInfo(), max: p90_jrc.getInfo(), palette: jrc_pal}, 'JRC');
   Export.image.toDrive({image: occurrence, folder: 'earth_engine', description: 'JRC', scale: 30,region: geometry});
   
-  select.items(layers);
+  select.items(list);
 }
 
 function downloadImg() {
