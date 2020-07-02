@@ -99,7 +99,10 @@ function downloadImg() {
 var downloadButton = ui.Button('Download viewport', downloadImg);
 var urlLabel = ui.Label('Download', {shown: false});
 
-var select = ui.Select();
+var select = ui.Select({
+  items: Object.keys(list),
+  placeholder: 'Seleccione una imagen'
+});
 
 
 map.setCenter(-59,-37, 6);
