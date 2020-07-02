@@ -43,7 +43,7 @@ var btnClear = ui.Button('Limpiar',function(){
   map.clear();
   map.drawingTools().clear();
   //map.setCenter(-59,-37, 6);
-  //map.setOptions("HYBRID");
+  map.setOptions("HYBRID");
 });
 var btnAnalyze = ui.Button('Analizar',function(){
   if (map.drawingTools().layers().length() > 0) {
