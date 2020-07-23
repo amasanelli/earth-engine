@@ -97,6 +97,19 @@ map.drawingTools().setShown(true);
 map.drawingTools().setDrawModes(['polygon','rectangle']);
 
 var label = ui.Label('Análisis de tierras');
+var input = ui.Textbox({
+  placeholder: 'Coordenadas',
+  onChange: function(str){ //-59,022503  -37,744309
+    try {
+      var arr = str.split("  ");
+      var x = parseFloat(arr[0].replace(',','.'));
+      var y = parseFloat(arr[1].replace(',','.'));
+      map.setCenter(x,y,18);
+    } catch (err) {
+      print('Invalid coordinates');
+    }
+  }
+});
 var btnClear = ui.Button({
   label: 'Limpiar',
   onClick: function(){
@@ -105,6 +118,7 @@ var btnClear = ui.Button({
     map.setOptions("HYBRID");
     urlLabel.style().set({shown: false});
     layer_list = {};
+    input.setValue('');
   }
 });
 var btnAnalyze = ui.Button({
@@ -117,15 +131,6 @@ var btnAnalyze = ui.Button({
     } else {
       print('Dibuje un poligono para analizar');
     }
-  }
-});
-var input = ui.Textbox({
-  placeholder: 'Coordenadas',
-  onChange: function(str){ //-59,022503  -37,744309
-    var arr = str.split("  ");
-    var x = parseFloat(arr[0].replace(',','.'));
-    var y = parseFloat(arr[1].replace(',','.'));
-    map.setCenter(x,y,18);
   }
 });
 var panel = ui.Panel({
