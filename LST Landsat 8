@@ -1,14 +1,5 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var dataset = ee.Image("USGS/SRTMGL1_003"),
-    geometry = /* color: #d63000 */ee.Geometry.Polygon(
-        [[[-59.798588195843536, -37.15623451919489],
-          [-59.739708343548614, -37.20041209189071],
-          [-59.7170490417908, -37.18030971261088],
-          [-59.73078195194705, -37.17223990579774],
-          [-59.713959137005645, -37.158697106966976],
-          [-59.72889367680057, -37.14788848633626],
-          [-59.75275460819705, -37.170461696885596],
-          [-59.78605691532596, -37.14474138234622]]]);
+var dataset = ee.Image("USGS/SRTMGL1_003");
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 //LST
 
@@ -33,7 +24,7 @@ function LST (image){
   return image.addBands(TS.rename('LST'));
 }
 
-var landsat = ee.ImageCollection('LANDSAT/LC08/C01/T1').filterBounds(geometry).filterDate('2018-01-01','2020-01-01').filter(ee.Filter.lt('CLOUD_COVER',1));
+var landsat = ee.ImageCollection('LANDSAT/LC08/C01/T1').filterBounds(geometry).filterDate('2018-01-01','2021-01-01').filter(ee.Filter.lt('CLOUD_COVER',1));
 var temp = landsat.map(LST).select(['LST']);
 var temp_min = temp.reduce(ee.Reducer.percentile([1])).rename('LST_min').clip(geometry);
 
@@ -43,7 +34,7 @@ var lst_max = ee.Number(temp_min.reduceRegion({reducer: ee.Reducer.max(),geometr
 print (lst_min);
 print (lst_max);
 Map.addLayer(temp_min, {min:lst_min.getInfo(), max:lst_max.getInfo(), palette: dem_pal}, 'LST');
-Export.image.toDrive({image:temp_min, folder:"earth_engine", description:'LST', scale:30, 'region':regionJSON});
+Export.image.toDrive({image:temp_min, folder:"earth_engine", description:'LST', scale:30, 'region':geometry});
 
 var title = {title: 'LST',hAxis: {title: 'Tiempo'},vAxis: {title: 'ºC'}};
 print(ui.Chart.image.series(temp, geometry).setOptions(title));
@@ -58,5 +49,5 @@ var p90_lote = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile(
 var p10_lote = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]),geometry:geometry,maxPixels:1e9,scale:30,}).get('elevation'));
 var dem_pal = ['#33E6FF','#734F00'];
 Map.addLayer(elevation, {min:p10_lote.getInfo(), max:p90_lote.getInfo(), palette: dem_pal}, 'DEM');
-Export.image.toDrive({image: elevation,folder: "earth_engine",description: 'DEM',scale: 30,'region':regionJSON,});
+Export.image.toDrive({image: elevation,folder: "earth_engine",description: 'DEM',scale: 30,'region':geometry,});
 
