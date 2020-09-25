@@ -7,7 +7,14 @@ var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
 
 var map = ui.Map();
 
-var years = ee.List.sequence(1, 5);
+var now_month = ee.Date(Date.now()).get('month');
+var now_year = ee.Date(Date.now()).get('year');
+var years_max = now_year - 2014;
+if(now_month.getInfo()<5) {
+  years_max--;
+}
+var years = ee.List.sequence(1, years_max);
+
 var ndvi_pal = ['#FF0000', '#FBFF00', '#357100'];
 var dem_pal = ['#33E6FF', '#734F00'];
 var jrc_pal = ['ffffff', 'ffbbbb', '0000ff'];
