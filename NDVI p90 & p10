@@ -30,7 +30,7 @@ var years_max = now_year.subtract(2014);
 if(now_month.lt(5)) {
   years_max.subtract(1);
 }
-var years = ee.List.sequence(1, years_max);
+var years = ee.List.sequence(0, years_max.subtract(1));
 
 var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
 var cloudBitMask = ee.Number(2).pow(10).int();
