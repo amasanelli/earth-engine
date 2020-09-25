@@ -24,11 +24,11 @@ var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 //var lotes = ee.FeatureCollection(geometry2);
-var now_month = ee.Date(Date.now()).get('month');
-var now_year = ee.Date(Date.now()).get('year');
-var years_max = now_year.getInfo() - 2014;
-if(now_month.getInfo()<5) {
-  years_max--;
+var now_month = ee.Number(ee.Date(Date.now()).get('month'));
+var now_year = ee.Number(ee.Date(Date.now()).get('year'));
+var years_max = now_year.subtract(2014);
+if(now_month.lt(5)) {
+  years_max.subtract(1);
 }
 var years = ee.List.sequence(1, years_max);
 
