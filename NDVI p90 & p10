@@ -7,17 +7,24 @@ var JRC = ee.Image("JRC/GSW1_1/GlobalSurfaceWater"),
     /* displayProperties: [
       {
         "type": "rectangle"
+      },
+      {
+        "type": "rectangle"
       }
     ] */
-    ee.Geometry.Polygon(
-        [[[-59.587254804003734, -37.151761914218],
-          [-59.587254804003734, -37.179052727476716],
-          [-59.540820401537914, -37.179052727476716],
-          [-59.540820401537914, -37.151761914218]]], null, false);
+    ee.Geometry.MultiPolygon(
+        [[[[-59.587254804003734, -37.151761914218],
+           [-59.587254804003734, -37.179052727476716],
+           [-59.540820401537914, -37.179052727476716],
+           [-59.540820401537914, -37.151761914218]]],
+         [[[-58.32376181477621, -36.71732838086412],
+           [-58.32376181477621, -36.775649841042146],
+           [-58.226086491289884, -36.775649841042146],
+           [-58.226086491289884, -36.71732838086412]]]], null, false);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 //var lotes = ee.FeatureCollection(geometry2);
-var years = ee.List.sequence(1, 5);
+var years = ee.List.sequence(1, 6);
 
 var ndvi_pal = ['#FF0000',  '#FBFF00','#357100'];
 var cloudBitMask = ee.Number(2).pow(10).int();
