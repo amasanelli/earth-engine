@@ -9,7 +9,7 @@ var map = ui.Map();
 
 var now_month = ee.Date(Date.now()).get('month');
 var now_year = ee.Date(Date.now()).get('year');
-var years_max = now_year - 2014;
+var years_max = now_year.getInfo() - 2014;
 if(now_month.getInfo()<5) {
   years_max--;
 }
