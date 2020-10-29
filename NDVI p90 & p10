@@ -55,8 +55,8 @@ Map.addLayer(NDVI_max, {min:0.4, max:0.8, palette: ndvi_pal}, 'NDVI_p90');
 Export.image.toDrive({image:NDVI_max,folder:'earth_engine',description:'NDVI_p90',scale:10,region:geometry,maxPixels:1e9,crs:'EPSG:32721'});
 
 var campaigns =  ee.ImageCollection(years.map(function (y){
-  var date_ini = ee.Date.fromYMD(2014,05,15).advance(y, 'year');
-  var date_fin = ee.Date.fromYMD(2015,05,15).advance(y, 'year');
+  var date_ini = ee.Date.fromYMD(2014,5,15).advance(y, 'year');
+  var date_fin = ee.Date.fromYMD(2015,5,15).advance(y, 'year');
   var NDVI_p90 = unfNDVI.filterDate(date_ini,date_fin).reduce(ee.Reducer.percentile([90])).clip(geometry);
   return NDVI_p90;
 }));
