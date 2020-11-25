@@ -43,14 +43,14 @@ function analyze(geometry) {
   layer_list.NDVI_p90 = NDVI_max.getDownloadURL({name: 'NDVI_p90', crs: 'EPSG:32721', scale: 10, region: geometry});
   
   /* NDVI P90 POR CAMPAÑA*/
-  
   var campaigns =  ee.ImageCollection(years.map(function (y){
     var date_ini = ee.Date.fromYMD(2014, 5, 15).advance(y, 'year');
     var date_end = ee.Date.fromYMD(2015, 5, 15).advance(y, 'year');
     var NDVI_p90 = unfNDVI.filterDate(date_ini, date_end).reduce(ee.Reducer.percentile([90])).clip(geometry);
     return NDVI_p90;
   }));
-
+  
+  /*
   var listOfImages = campaigns.toList(campaigns.size());
   for (var i = 0; i < campaigns.size().getInfo(); i ++){
     var img = ee.Image(listOfImages.get(i));
@@ -59,6 +59,7 @@ function analyze(geometry) {
     layer_list['NDVI_p90_' + campaign] = img.getDownloadURL({name: 'NDVI_p90_' + campaign, crs: 'EPSG:32721', scale: 10, region: geometry});
     //Export.image.toDrive({image: img, folder: 'earth_engine', description: 'NDVI_p90_' + campaign, scale: 10, region: geometry});
   }
+  */
   
   /* NDVI P10 HISTORICO TOTAL*/
   var NDVI_min= unfNDVI.reduce(ee.Reducer.percentile([10])).clip(geometry);
