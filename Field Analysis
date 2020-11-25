@@ -97,7 +97,7 @@ var select = ui.Select({
   style: {shown: false}
 });
 
-map.setCenter(-59,-37, 13);
+map.setCenter(-59,-37, 6);
 map.setOptions("HYBRID");
 
 map.drawingTools().setShown(true);
