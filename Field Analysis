@@ -66,11 +66,14 @@ function analyze(geometry) {
   //Export.image.toDrive({image: NDVI_min, folder: 'earth_engine', description: 'NDVI_p10', scale: 10, region: geometry});
 
   /* DEM */
+  /*
   var elevation = DEM.select('elevation').clip(geometry);
   var p90_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var p10_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
+  print(elevation);
   map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
   layer_list.DEM = elevation.getDownloadURL({name: 'DEM', crs: 'EPSG:32721', scale: 30, region: geometry});
+  */
   //Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
 
   /* JRC */
