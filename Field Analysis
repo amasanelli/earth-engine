@@ -44,22 +44,20 @@ function analyze(geometry) {
   
   /* NDVI P90 POR CAMPAÑA*/
   var campaigns =  ee.ImageCollection(years.map(function (y){
-    var date_ini = ee.Date.fromYMD(2014, 5, 15).advance(y, 'year');
-    var date_end = ee.Date.fromYMD(2015, 5, 15).advance(y, 'year');
+    var date_ini = ee.Date.fromYMD(2015, 5, 15).advance(y, 'year');
+    var date_end = ee.Date.fromYMD(2016, 5, 15).advance(y, 'year');
     var NDVI_p90 = unfNDVI.filterDate(date_ini, date_end).reduce(ee.Reducer.percentile([90])).clip(geometry);
     return NDVI_p90;
   }));
   
-  /*
   var listOfImages = campaigns.toList(campaigns.size());
   for (var i = 0; i < campaigns.size().getInfo(); i ++){
     var img = ee.Image(listOfImages.get(i));
-    var campaign = (2014 + i) + "-" + (2015 + i);
+    var campaign = (2015 + i) + "-" + (2016 + i);
     map.addLayer(img, {min: 0.4, max: 0.8, palette: ndvi_pal}, 'NDVI_p90_' + campaign);
     layer_list['NDVI_p90_' + campaign] = img.getDownloadURL({name: 'NDVI_p90_' + campaign, crs: 'EPSG:32721', scale: 10, region: geometry});
     //Export.image.toDrive({image: img, folder: 'earth_engine', description: 'NDVI_p90_' + campaign, scale: 10, region: geometry});
   }
-  */
   
   /* NDVI P10 HISTORICO TOTAL*/
   var NDVI_min= unfNDVI.reduce(ee.Reducer.percentile([10])).clip(geometry);
@@ -71,7 +69,6 @@ function analyze(geometry) {
   var elevation = DEM.select('elevation').clip(geometry);
   var p90_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([90]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
   var p10_dem = ee.Number(elevation.reduceRegion({reducer: ee.Reducer.percentile([10]), geometry: geometry, maxPixels: 1e9, scale: 30}).get('elevation'));
-  print(elevation);
   map.addLayer(elevation, {min: p10_dem.getInfo(), max: p90_dem.getInfo(), palette: dem_pal}, 'DEM');
   layer_list.DEM = elevation.getDownloadURL({name: 'DEM', crs: 'EPSG:32721', scale: 30, region: geometry});
   //Export.image.toDrive({image: elevation, folder: 'earth_engine', description: 'DEM', scale: 30,region: geometry});
@@ -100,7 +97,7 @@ var select = ui.Select({
   style: {shown: false}
 });
 
-map.setCenter(-59,-37, 6);
+map.setCenter(-59,-37, 13);
 map.setOptions("HYBRID");
 
 map.drawingTools().setShown(true);
