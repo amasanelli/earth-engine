@@ -1,17 +1,17 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var dataset = ee.Image("USGS/SRTMGL1_003"),
     geometry = 
-    /* color: #d63000 */
+    /* color: #00ffff */
     /* displayProperties: [
       {
         "type": "rectangle"
       }
     ] */
     ee.Geometry.Polygon(
-        [[[-58.16096193682861, -37.85321744964515],
-          [-58.16096193682861, -37.895426478041145],
-          [-58.063286613342285, -37.895426478041145],
-          [-58.063286613342285, -37.85321744964515]]], null, false);
+        [[[-59.751372767456054, -38.51863302951356],
+          [-59.751372767456054, -38.573678585587004],
+          [-59.67807335949707, -38.573678585587004],
+          [-59.67807335949707, -38.51863302951356]]], null, false);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 //LST
 
