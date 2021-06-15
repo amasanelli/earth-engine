@@ -1,5 +1,17 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var dataset = ee.Image("USGS/SRTMGL1_003");
+var dataset = ee.Image("USGS/SRTMGL1_003"),
+    geometry = 
+    /* color: #d63000 */
+    /* displayProperties: [
+      {
+        "type": "rectangle"
+      }
+    ] */
+    ee.Geometry.Polygon(
+        [[[-58.16096193682861, -37.85321744964515],
+          [-58.16096193682861, -37.895426478041145],
+          [-58.063286613342285, -37.895426478041145],
+          [-58.063286613342285, -37.85321744964515]]], null, false);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 //LST
 
@@ -24,7 +36,7 @@ function LST (image){
   return image.addBands(TS.rename('LST'));
 }
 
-var landsat = ee.ImageCollection('LANDSAT/LC08/C01/T1').filterBounds(geometry).filterDate('2018-01-01','2021-01-01').filter(ee.Filter.lt('CLOUD_COVER',1));
+var landsat = ee.ImageCollection('LANDSAT/LC08/C01/T1').filterBounds(geometry).filterDate('2010-01-01','2022-01-01').filter(ee.Filter.lt('CLOUD_COVER',1));
 var temp = landsat.map(LST).select(['LST']);
 var temp_min = temp.reduce(ee.Reducer.percentile([1])).rename('LST_min').clip(geometry);
 
