@@ -1,10 +1,63 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var geometry = /* color: #d63000 */ee.Geometry.Polygon(
-        [[[-59.002365002264774, -37.26971948939343],
-          [-59.007343182196415, -37.265894395383306],
-          [-59.01841534100989, -37.26917305928853],
-          [-59.026311764349735, -37.27648123375289],
-          [-59.02013195477942, -37.2811936055169]]]);
+var geometry = /* color: #d63000 */ee.Geometry({
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -59.002365002264774,
+                -37.26971948939343
+              ],
+              [
+                -59.007343182196415,
+                -37.265894395383306
+              ],
+              [
+                -59.01841534100989,
+                -37.26917305928853
+              ],
+              [
+                -59.026311764349735,
+                -37.27648123375289
+              ],
+              [
+                -59.02013195477942,
+                -37.2811936055169
+              ]
+            ]
+          ],
+          "evenOdd": true
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -59.00103462659339,
+                -37.26330082209913
+              ],
+              [
+                -58.99468315564612,
+                -37.26835554343563
+              ],
+              [
+                -58.98198021375159,
+                -37.26002190252021
+              ],
+              [
+                -58.988331684698856,
+                -37.25605968424254
+              ]
+            ]
+          ],
+          "geodesic": true,
+          "evenOdd": true
+        }
+      ],
+      "coordinates": []
+    });
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 
 var cloudBitMask = ee.Number(2).pow(10).int();
@@ -33,15 +86,6 @@ var NDVI = S2Collection
   })
   .select(['NDVI'])
   .map(function (image) {
-    var mean = image.reduceRegion({
-      reducer: ee.Reducer.mean(),
-      maxPixels: 1e9,
-      scale: 30,
-      geometry: geometry
-    });
-    return image.set(mean);
-  })
-  .map(function (image) {
     var rinde = image.expression(
       '-3454.1 * ( NDVI ** 2 ) + 10145 * NDVI - 3663.2', 
       {
@@ -63,8 +107,23 @@ var NDVI = S2Collection
 var chart_opt = { title: 'NDVI',hAxis: {title: 'Tiempo'},vAxis: {title: 'NDVI'} };
 print(ui.Chart.image.series(NDVI.select(['NDVI']), geometry).setOptions(chart_opt));
 
-print('NDVI max:', NDVI.aggregate_max('NDVI'));
+var reduced = NDVI.map(function(image){
+  return image.reduceRegions({
+    collection:geometry , 
+    reducer:ee.Reducer.mean(), 
+    scale: 30
+  });
+});
 
+print(reduced);
+
+var table = reduced.flatten();
+
+print(table);
+
+//print('NDVI max:', NDVI.aggregate_max('NDVI'));
+
+/*
 var rinde = ee.Number.expression(
   '22.068 * ( NDVI ** 2 ) - 9.5584 * NDVI + 2.6075', 
   {
@@ -82,3 +141,4 @@ var rinde = ee.Number.expression(
 );
 
 print(rinde);
+*/
