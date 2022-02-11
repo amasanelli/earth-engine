@@ -1,0 +1,43 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var geometry = /* color: #d63000 */ee.Geometry.Polygon(
+        [[[-59.002365002264774, -37.26971948939343],
+          [-59.007343182196415, -37.265894395383306],
+          [-59.01841534100989, -37.26917305928853],
+          [-59.026311764349735, -37.27648123375289],
+          [-59.02013195477942, -37.2811936055169]]]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
+var cloudBitMask = ee.Number(2).pow(10).int();
+var cirrusBitMask = ee.Number(2).pow(11).int();
+var to = new Date();
+var since = new Date(to -1000 * 60 * 60 * 24 * 150);
+
+var S2Collection = ee.ImageCollection('COPERNICUS/S2').filterBounds(geometry).filterDate(since, to).filterMetadata('CLOUDY_PIXEL_PERCENTAGE','less_than',2);
+
+var S2CloudMasked = S2Collection
+  .map(function (image) {
+    var qa = image.select('QA60');
+    var mask = qa.bitwiseAnd(cloudBitMask).eq(0)
+              .and(qa.bitwiseAnd(cirrusBitMask).eq(0));
+    return image.updateMask(mask);
+  });
+
+var NDVI = S2Collection
+  .map(function (image) {
+    return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+  })
+  .select(['NDVI']);
+
+var chart_opt = { title: 'NDVI',hAxis: {title: 'Tiempo'},vAxis: {title: 'NDVI'} };
+print(ui.Chart.image.series(NDVI, geometry).setOptions(chart_opt));
+
+
+var max_ndvi = NDVI.map(function (image) {
+  var mean = image.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: geometry
+  });
+  return image.set(mean);
+});
+
+print(max_ndvi.first());
