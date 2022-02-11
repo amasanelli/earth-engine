@@ -22,24 +22,63 @@ var S2CloudMasked = S2Collection
     return image.updateMask(mask);
   });
 
+/*
+  Rinde Maiz = 22,068*NDVI^2-9,5584*NDVI+2,6075
+  Rinde Girasol= -3454,1*NDVI^2+10145*NDVI-3663,2
+*/
+
 var NDVI = S2Collection
   .map(function (image) {
     return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
   })
-  .select(['NDVI']);
-
-var chart_opt = { title: 'NDVI',hAxis: {title: 'Tiempo'},vAxis: {title: 'NDVI'} };
-print(ui.Chart.image.series(NDVI, geometry).setOptions(chart_opt));
-
-
-var max_ndvi = NDVI.map(function (image) {
-  var mean = image.reduceRegion({
-    reducer: ee.Reducer.mean(),
-    maxPixels: 1e9,
-    scale: 30,
-    geometry: geometry
+  .select(['NDVI'])
+  .map(function (image) {
+    var mean = image.reduceRegion({
+      reducer: ee.Reducer.mean(),
+      maxPixels: 1e9,
+      scale: 30,
+      geometry: geometry
+    });
+    return image.set(mean);
+  })
+  .map(function (image) {
+    var rinde = image.expression(
+      '-3454.1 * ( NDVI ** 2 ) + 10145 * NDVI - 3663.2', 
+      {
+        'NDVI':image.select('NDVI')
+      }
+    );
+    return image.addBands(rinde.rename('RINDE_GL'));
+  })
+  .map(function (image) {
+    var rinde = image.expression(
+      '22.068 * ( NDVI ** 2 ) - 9.5584 * NDVI + 2.6075', 
+      {
+        'NDVI':image.select('NDVI')
+      }
+    );
+    return image.addBands(rinde.rename('RINDE_MZ'));
   });
-  return image.set(mean);
-});
+  
+var chart_opt = { title: 'NDVI',hAxis: {title: 'Tiempo'},vAxis: {title: 'NDVI'} };
+print(ui.Chart.image.series(NDVI.select(['NDVI']), geometry).setOptions(chart_opt));
 
-print(max_ndvi.first());
+print('NDVI max:', NDVI.aggregate_max('NDVI'));
+
+var rinde = ee.Number.expression(
+  '22.068 * ( NDVI ** 2 ) - 9.5584 * NDVI + 2.6075', 
+  {
+    'NDVI': 0.80
+  }
+);
+
+print(rinde);
+
+var rinde = ee.Number.expression(
+  '( -3454.1 * ( NDVI ** 2 ) + 10145 * NDVI - 3663.2 ) / 1000', 
+  {
+    'NDVI': 0.80
+  }
+);
+
+print(rinde);
