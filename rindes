@@ -35,6 +35,8 @@ print(ui.Chart.image.series(NDVI, geometry).setOptions(chart_opt));
 var max_ndvi = NDVI.map(function (image) {
   var mean = image.reduceRegion({
     reducer: ee.Reducer.mean(),
+    maxPixels: 1e9,
+    scale: 30,
     geometry: geometry
   });
   return image.set(mean);
